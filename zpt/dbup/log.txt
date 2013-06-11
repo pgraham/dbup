@@ -1,0 +1,9 @@
+Running
+Transaction begun
+version: 1 -> Array
+(
+    [alter] => /home/pgraham/src/dbup/test/sql/alter-000001.sql
+    [pre] => /home/pgraham/src/dbup/test/sql/pre-alter-000001.php
+    [post] => /home/pgraham/src/dbup/test/sql/post-alter-000001.php
+)
+
