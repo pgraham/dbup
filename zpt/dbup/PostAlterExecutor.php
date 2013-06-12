@@ -21,6 +21,15 @@ namespace zpt\dbup;
  */
 interface PostAlterExecutor {
 
-  public function execute($path, $db, $data);
+  /**
+   * Execute the post-alter script at the given path.
+   *
+   * @param string $path The path to the post-alter script.
+   * @param PDO $db PDO connection to the db to which the script should be 
+   *   applied.
+   * @param StdClass $data StdClass instance populated by the an associated 
+   *   pre-alter script.
+   */
+  public function executePostAlter($path, $db, $data);
 
 }

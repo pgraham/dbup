@@ -52,8 +52,11 @@ class DatabaseUpdater {
       if ($version > $this->_curVersion) {
         if (isset($scripts['pre'])) {
           try {
-            $this->_preAlterExecutor->execute($scripts['pre'], $this->_db,
-              $data);
+            $this->_preAlterExecutor->executePreAlter(
+              $scripts['pre'],
+              $this->_db,
+              $data
+            );
           } catch (Exception $e) {
             $this->_db->rollback();
             throw new DatabaseUpdateException($version, 'pre', $e);
@@ -62,7 +65,10 @@ class DatabaseUpdater {
 
         if (isset($scripts['alter'])) {
           try {
-            $this->_alterExecutor->execute($scripts['alter'], $this->_db);
+            $this->_alterExecutor->executeAlter(
+              $scripts['alter'], 
+              $this->_db
+            );
           } catch (Exception $e) {
             $this->_db->rollback();
             throw new DatabaseUpdateException($version, 'alter', $e);
@@ -71,8 +77,11 @@ class DatabaseUpdater {
 
         if (isset($scripts['post'])) {
           try {
-            $this->_postAlterExecutor->execute($scripts['post'], $this->_db,
-              $data);
+            $this->_postAlterExecutor->executePostAlter(
+              $scripts['post'],
+              $this->_db,
+              $data
+            );
           } catch (Exception $e) {
             $this->_db->rollback();
             throw new DatabaseUpdateException($version, 'post', $e);

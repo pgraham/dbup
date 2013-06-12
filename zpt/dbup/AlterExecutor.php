@@ -21,6 +21,6 @@ namespace zpt\dbup;
  */
 interface AlterExecutor {
 
-  public function execute($path, $db);
+  public function executeAlter($path, $db);
 
 }
