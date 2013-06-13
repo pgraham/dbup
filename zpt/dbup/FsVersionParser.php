@@ -29,6 +29,13 @@ class FsVersionParser implements VersionParser {
 
   private $_pathIteratorFactory;
 
+  public function __construct(PathIteratorFactory $pathIteratorFactory = null) {
+    if ($pathIteratorFactory === null) {
+      $pathIteratorFactory = new SplPathIteratorFactory();
+    }
+    $this->_pathIteratorFactory = $pathIteratorFactory;
+  }
+
   public function parseVersions($path) {
     $iter = $this->_pathIteratorFactory->create($path);
 
