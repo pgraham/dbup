@@ -36,6 +36,14 @@ class FsVersionParser implements VersionParser {
     $this->_pathIteratorFactory = $pathIteratorFactory;
   }
 
+  public function parseBase($path) {
+    $baseScript = "$path/base.sql";
+    if (file_exists($baseScript)) {
+      return $baseScript;
+    }
+    return null;
+  }
+
   public function parseVersions($path) {
     $iter = $this->_pathIteratorFactory->create($path);
 

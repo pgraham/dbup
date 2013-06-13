@@ -33,7 +33,7 @@ class DatabaseUpdater {
   private $_alterExecutor;
   private $_postAlterExecutor;
 
-  public function __construct($db, $curVersion, $alterDir)
+  public function __construct($db, $alterDir, $curVersion = null)
   {
     $this->_db = $db;
     $this->_curVersion = $curVersion;
@@ -41,10 +41,19 @@ class DatabaseUpdater {
   }
 
   public function run() {
-    $versions = $this->_versionParser->parseVersions($this->_alterDir);
 
     $this->_db->beginTransaction();
 
+    $versions = $this->_versionParser->parseVersions($this->_alterDir);
+
+    if ($this->_curVersion === null) {
+      $base = $this->_versionParser->parseBase($this->_alterDir);
+      if ($base !== null) {
+        $this->_alterExecutor->executeAlter($base, $this->_db);
+      }
+    }
+
+    $versions = array();
     foreach ($versions as $version => $scripts) {
 
       $data = new StdClass();
