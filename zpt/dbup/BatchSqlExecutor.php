@@ -14,6 +14,8 @@
  */
 namespace zpt\dbup;
 
+use \PDOException;
+
 /**
  * This class implements the AlterExecutor interface by breaking the script into 
  * statements and executing the individually using PDO::exec(...);
@@ -29,9 +31,53 @@ class BatchSqlExecutor implements AlterExecutor {
 		}
 
 		$sql = file_get_contents($path);
-		$stmts = explode(";\n", $sql);
+		$stmts = $this->parseStmts($sql);
 		foreach ($stmts as $stmt) {
-			$db->exec($stmt);
+			$stmtSql = $stmt->getSql();
+			try {
+				echo "Executing $stmtSql\n";
+				$db->exec($stmtSql);
+			} catch (PDOException $e) {
+				throw new BatchSqlExecutionException(
+					$path,
+					$stmt->getLineNum(),
+					$stmtSql,
+					$e
+				);
+			}
 		}
+	}
+
+	private function parseStmts($sql) {
+		$stmts = array();
+
+		$lines = explode("\n", $sql);
+		$curStmt = array();
+		$stmtLine = null;
+		foreach ($lines as $idx => $line) {
+			if (trim($line) === '') {
+				continue;
+			}
+			if (preg_match('/^\s*--/', $line)) {
+				continue;
+			}
+
+			$lineNum = $idx + 1;
+
+			// Remove any trailing comments from the line
+			$line = preg_replace('/--.*$/', '', $line);
+
+			$curStmt[] = $line;
+			if ($stmtLine === null) {
+				$stmtLine = $lineNum;
+			}
+			if (preg_match('/;$/', $line)) {
+				$stmts[] = new BatchSqlStatement(implode(' ', $curStmt), $stmtLine);
+				$curStmt = array();
+				$stmtLine = null;
+			}
+		}
+
+		return $stmts;
 	}
 }
