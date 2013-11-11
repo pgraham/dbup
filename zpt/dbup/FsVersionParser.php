@@ -62,7 +62,7 @@ class FsVersionParser implements VersionParser {
       } else if (preg_match(self::POST_ALTER_REGEX, $fName, $matches)) {
         $type = 'post';
       }
-    
+
       if ($type !== null) {
         $version = (int) $matches[1];
         $versions->addScript($type, $version, $pathName);

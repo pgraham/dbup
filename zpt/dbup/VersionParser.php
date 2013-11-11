@@ -23,7 +23,7 @@ namespace zpt\dbup;
 interface VersionParser {
 
 	/**
-	 * Parse the "base" file for the database schema.  This script will get 
+	 * Parse the "base" file for the database schema.  This script will get
 	 * executed if the current database has no `alter` table.
 	 */
 	public function parseBase($path);
