@@ -28,13 +28,13 @@ interface VersionParser {
 	 */
 	public function parseBase($path);
 
-  /**
-   * Parse the database version scripts found at the given path.  Path can be
-   * anything that can be used to point to a readable resource.
-   *
-   * @param mixed $path
-   * @return VersionList
-   */
-  public function parseVersions($path);
+	/**
+	* Parse the database version scripts found at the given path.  Path can be
+	* anything that can be used to point to a readable resource.
+	*
+	* @param mixed $path
+	* @return VersionList
+	*/
+	public function parseVersions($path);
 
 }

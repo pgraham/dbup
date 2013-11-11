@@ -75,7 +75,7 @@ class DatabaseUpdater {
         if (isset($scripts['alter'])) {
           try {
             $this->_alterExecutor->executeAlter(
-              $scripts['alter'], 
+              $scripts['alter'],
               $this->_db
             );
           } catch (Exception $e) {

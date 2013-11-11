@@ -15,25 +15,25 @@
 namespace zpt\dbup;
 
 /**
- * This class implements both the PreAlterExecutor and PostAlterExecutor 
+ * This class implements both the PreAlterExecutor and PostAlterExecutor
  * interfaces by simply doing a PHP include of the pre/post alter scripts.
- * The data object is populated with what ever is returned from a pre-alter
- * execution.
+ * Any data returned from the pre alter will be passed to the post alter in the
+ * global variable $DBUP_DATA.
  */
 class PhpIncludeExecutor implements PreAlterExecutor, PostAlterExecutor {
 
 	/**
 	 * Execute the specified pre-alter script.
 	 *
-	 * The given PDO connection will be made available to the included script as 
+	 * The given PDO connection will be made available to the included script as
 	 *
 	 *     $GLOBALS['DBUP_CONN'];
-	 * 
+	 *
 	 * The given data object will be made available to the included script as
 	 *
 	 *     $GLOBALS['DBUP_DATA'];
-	 * 
-	 * The pre alter script can also return an array or object which will have 
+	 *
+	 * The pre alter script can also return an array or object which will have
 	 * it's keys/properties added to the data object.
 	 */
 	public function executePreAlter($path, $db, $data) {
@@ -57,7 +57,7 @@ class PhpIncludeExecutor implements PreAlterExecutor, PostAlterExecutor {
 	/**
 	 * Execute the specified post-alter script.
 	 *
-	 * The given PDO connection and data object will be made available to the 
+	 * The given PDO connection and data object will be made available to the
 	 * included script as
 	 *
 	 *     $GLOBALS['DBUP_CONN'];
