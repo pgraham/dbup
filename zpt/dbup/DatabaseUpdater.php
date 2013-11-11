@@ -15,6 +15,7 @@
 namespace zpt\dbup;
 
 use \Exception;
+use \PDO;
 use \StdClass;
 
 /**
@@ -24,32 +25,22 @@ use \StdClass;
  */
 class DatabaseUpdater {
 
-  private $_db;
-  private $_curVersion;
-  private $_alterDir;
+  private $versionParser;
+  private $preAlterExecutor;
+  private $alterExecutor;
+  private $postAlterExecutor;
 
-  private $_versionParser;
-  private $_preAlterExecutor;
-  private $_alterExecutor;
-  private $_postAlterExecutor;
+  public function update(PDO $db, $alterDir, $curVersion = null) {
+    $this->ensureDependencies();
 
-  public function __construct($db, $alterDir, $curVersion = null)
-  {
-    $this->_db = $db;
-    $this->_curVersion = $curVersion;
-    $this->_alterDir = $alterDir;
-  }
+    $db->beginTransaction();
 
-  public function run() {
+    $versions = $this->versionParser->parseVersions($alterDir);
 
-    $this->_db->beginTransaction();
-
-    $versions = $this->_versionParser->parseVersions($this->_alterDir);
-
-    if ($this->_curVersion === null) {
-      $base = $this->_versionParser->parseBase($this->_alterDir);
+    if ($curVersion === null) {
+      $base = $this->versionParser->parseBase($alterDir);
       if ($base !== null) {
-        $this->_alterExecutor->executeAlter($base, $this->_db);
+        $this->alterExecutor->executeAlter($base, $db);
       }
     }
 
@@ -58,64 +49,87 @@ class DatabaseUpdater {
 
       $data = new StdClass();
 
-      if ($version > $this->_curVersion) {
+      if ($version > $curVersion) {
         if (isset($scripts['pre'])) {
           try {
-            $this->_preAlterExecutor->executePreAlter(
+            $this->preAlterExecutor->executePreAlter(
               $scripts['pre'],
-              $this->_db,
+              $db,
               $data
             );
           } catch (Exception $e) {
-            $this->_db->rollback();
+            $db->rollback();
             throw new DatabaseUpdateException($version, 'pre', $e);
           }
         }
 
         if (isset($scripts['alter'])) {
           try {
-            $this->_alterExecutor->executeAlter(
+            $this->alterExecutor->executeAlter(
               $scripts['alter'],
-              $this->_db
+              $db
             );
           } catch (Exception $e) {
-            $this->_db->rollback();
+            $db->rollback();
             throw new DatabaseUpdateException($version, 'alter', $e);
           }
         }
 
         if (isset($scripts['post'])) {
           try {
-            $this->_postAlterExecutor->executePostAlter(
+            $this->postAlterExecutor->executePostAlter(
               $scripts['post'],
-              $this->_db,
+              $db,
               $data
             );
           } catch (Exception $e) {
-            $this->_db->rollback();
+            $db->rollback();
             throw new DatabaseUpdateException($version, 'post', $e);
           }
         }
       }
     }
 
-    $this->_db->commit();
+    $db->commit();
   }
 
   public function setAlterExecutor(AlterExecutor $alterExecutor) {
-    $this->_alterExecutor = $alterExecutor;
+    $this->alterExecutor = $alterExecutor;
   }
 
   public function setPostAlterExecutor(PostAlterExecutor $postAlterExecutor) {
-    $this->_postAlterExecutor = $postAlterExecutor;
+    $this->postAlterExecutor = $postAlterExecutor;
   }
 
   public function setPreAlterExecutor(PreAlterExecutor $preAlterExecutor) {
-    $this->_preAlterExecutor = $preAlterExecutor;
+    $this->preAlterExecutor = $preAlterExecutor;
   }
 
   public function setVersionParser(VersionParser $versionParser) {
-    $this->_versionParser = $versionParser;
+    $this->versionParser = $versionParser;
+  }
+
+  private function ensureDependencies() {
+
+    if ($this->preAlterExecutor === null || $this->postAlterExecutor === null) {
+      $inclExecutor = new PhpIncludeExecutor();
+
+      if ($this->preAlterExecutor === null) {
+        $this->preAlterExecutor = $inclExecutor;
+      }
+
+      if ($this->postAlterExecutor === null) {
+        $this->postAlterExecutor = $inclExecutor;
+      }
+    }
+
+    if ($this->alterExecutor === null) {
+      $this->alterExecutor = new BatchSqlExecutor();
+    }
+
+    if ($this->versionParser === null) {
+      $this->versionParser = new FsVersionParser();
+    }
   }
 
 }
