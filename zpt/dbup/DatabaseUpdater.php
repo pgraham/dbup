@@ -29,14 +29,16 @@ class DatabaseUpdater {
   private $preAlterExecutor;
   private $alterExecutor;
   private $postAlterExecutor;
+  private $curVerRetriever;
 
-  public function update(PDO $db, $alterDir, $curVersion = null) {
+  public function update(PDO $db, $alterDir) {
     $this->ensureDependencies();
 
     $db->beginTransaction();
 
     $versions = $this->versionParser->parseVersions($alterDir);
 
+    $curVersion = $this->curVerRetriever->getVersion($db);
     if ($curVersion === null) {
       $base = $this->versionParser->parseBase($alterDir);
       if ($base !== null) {
@@ -97,6 +99,12 @@ class DatabaseUpdater {
     $this->alterExecutor = $alterExecutor;
   }
 
+  public function setCurrentVersionRetrievalScheme(
+    CurrentVersionRetrievalScheme $curVerRetriever
+  ) {
+    $this->curVerRetriever = $curVerRetriever;
+  }
+
   public function setPostAlterExecutor(PostAlterExecutor $postAlterExecutor) {
     $this->postAlterExecutor = $postAlterExecutor;
   }
@@ -129,6 +137,10 @@ class DatabaseUpdater {
 
     if ($this->versionParser === null) {
       $this->versionParser = new FsVersionParser();
+    }
+
+    if ($this->curVerRetriever === null) {
+      $this->curVerRetriever = new DefaultCurrentVersionRetrievalScheme();
     }
   }
 
