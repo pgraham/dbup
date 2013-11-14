@@ -17,12 +17,12 @@ namespace zpt\dbup;
 use \PDO;
 
 /**
- * Default CurrentVersionRetrievalScheme implementation.
+ * Default DatabaseVersionRetrievalScheme implementation.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class DefaultCurrentVersionRetrievalScheme
-	implements CurrentVersionRetrievalScheme
+class DefaultDatabaseVersionRetrievalScheme
+	implements DatabaseVersionRetrievalScheme
 {
 
 	/**

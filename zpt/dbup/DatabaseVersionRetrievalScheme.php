@@ -22,7 +22,7 @@ use \PDO;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-interface CurrentVersionRetrievalScheme
+interface DatabaseVersionRetrievalScheme
 {
 
 	/**
