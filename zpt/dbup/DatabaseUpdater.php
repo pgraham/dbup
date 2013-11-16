@@ -14,6 +14,9 @@
  */
 namespace zpt\dbup;
 
+use \Psr\Log\LoggerAwareInterface;
+use \Psr\Log\LoggerInterface;
+use \Psr\Log\NullLogger;
 use \Exception;
 use \PDO;
 use \StdClass;
@@ -23,7 +26,10 @@ use \StdClass;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class DatabaseUpdater {
+class DatabaseUpdater implements LoggerAwareInterface
+{
+
+	private $logger;
 
 	private $versionParser;
 	private $preAlterExecutor;
@@ -34,14 +40,24 @@ class DatabaseUpdater {
 	public function update(PDO $db, $alterDir) {
 		$this->ensureDependencies();
 
+		$this->logger->info('Updating database with alters in directory {dir}', [
+			'dir' => $alterDir
+		]);
+
 		$db->beginTransaction();
 
 		$versions = $this->versionParser->parseVersions($alterDir);
 
 		$curVersion = $this->dbVerRetriever->getVersion($db);
+		$this->logger->info('Current database version is {dbVersion}', [
+			'dbVersion' => $curVersion === null ? 'unintialized' : $curVersion
+		]);
+
+		// If this is an uninitialized database apply the base schema if it exists.
 		if ($curVersion === null) {
 			$base = $this->versionParser->parseBase($alterDir);
 			if ($base !== null) {
+				$this->logger->info('Applying base schema');
 				$this->alterExecutor->executeAlter($base, $db);
 			}
 		}
@@ -52,6 +68,7 @@ class DatabaseUpdater {
 			$data = new StdClass();
 
 			if ($version > $curVersion) {
+				$this->logger->info('Applying alter {alter}', [ 'alter' => $version ]);
 				if (isset($scripts['pre'])) {
 					try {
 						$this->preAlterExecutor->executePreAlter(
@@ -105,6 +122,10 @@ class DatabaseUpdater {
 		$this->dbVerRetriever = $dbVerRetriever;
 	}
 
+	public function setLogger(LoggerInterface $logger) {
+		$this->logger = $logger;
+	}
+
 	public function setPostAlterExecutor(PostAlterExecutor $postAlterExecutor) {
 		$this->postAlterExecutor = $postAlterExecutor;
 	}
@@ -118,6 +139,10 @@ class DatabaseUpdater {
 	}
 
 	private function ensureDependencies() {
+
+		if ($this->logger === null) {
+			$this->logger = new NullLogger();
+		}
 
 		if ($this->preAlterExecutor === null || $this->postAlterExecutor === null) {
 			$inclExecutor = new PhpIncludeExecutor();
