@@ -19,6 +19,7 @@ require_once __DIR__ . '/test-common.php';
 use \PHPUnit_Framework_TestCase as TestCase;
 use \zpt\dbup\DatabaseUpdateException;
 use \zpt\dbup\DatabaseUpdater;
+use \zpt\util\PdoExt;
 use \Exception;
 use \Mockery as M;
 
@@ -38,7 +39,13 @@ class DatabaseUpdaterTest extends TestCase {
 
     // Mock dependencies and setup expectations
     // -------------------------------------------------------------------------
-    $db = M::mock('db');
+    $pdo = new PdoExt([
+      'driver' => 'sqlite',
+      'database' => ':memory:',
+      'username' => null,
+      'password' => null
+    ]);
+    $db = M::mock($pdo);
     $db->shouldReceive('beginTransaction')->withNoArgs()->once();
     $db->shouldReceive('commit')->withNoArgs()->once();
     $db->shouldReceive('rollback')->never();
@@ -75,7 +82,7 @@ class DatabaseUpdaterTest extends TestCase {
 
     // Set object under test and its mocked dependencies
     // -------------------------------------------------------------------------
-    $dbup = new DatabaseUpdater($db, 0, $dbDir);
+    $dbup = new DatabaseUpdater();
     $dbup->setVersionParser($versionParser);
     $dbup->setPreAlterExecutor($preAlterExecutor);
     $dbup->setAlterExecutor($alterExecutor);
@@ -83,7 +90,7 @@ class DatabaseUpdaterTest extends TestCase {
 
     // Run the update to exercise the object
     // -------------------------------------------------------------------------
-    $dbup->run();
+    $dbup->update($db, $dbDir);
   }
 
   public function testExceptionInPrePhase() {
@@ -129,7 +136,7 @@ class DatabaseUpdaterTest extends TestCase {
 
     // Set object under test and its mocked dependencies
     // -------------------------------------------------------------------------
-    $dbup = new DatabaseUpdater($db, 0, $dbDir);
+    $dbup = new DatabaseUpdater();
     $dbup->setVersionParser($versionParser);
     $dbup->setPreAlterExecutor($preAlterExecutor);
     $dbup->setAlterExecutor($alterExecutor);
@@ -138,7 +145,7 @@ class DatabaseUpdaterTest extends TestCase {
     // Run the update to exercise the object
     // -------------------------------------------------------------------------
     try {
-      $dbup->run();
+      $dbup->update($db, $dbDir);
       $this->fail('Expected DatabaseUpdateException has not been raised');
     } catch (DatabaseUpdateException $e) {
       // TODO Assert the DatabaseUpdateException

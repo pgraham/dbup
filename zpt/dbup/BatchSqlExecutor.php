@@ -14,10 +14,11 @@
  */
 namespace zpt\dbup;
 
+use \zpt\db\DatabaseConnection;
 use \PDOException;
 
 /**
- * This class implements the AlterExecutor interface by breaking the script into 
+ * This class implements the AlterExecutor interface by breaking the script into
  * statements and executing the individually using PDO::exec(...);
  *
  * @author Philip Graham <philip@zeptech.ca>

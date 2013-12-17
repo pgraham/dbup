@@ -14,6 +14,8 @@
  */
 namespace zpt\dbup;
 
+use \zpt\db\DatabaseConnection;
+
 /**
  * Interface for classes with execute database alter SQL files.
  *
@@ -21,6 +23,14 @@ namespace zpt\dbup;
  */
 interface AlterExecutor {
 
-  public function executeAlter($path, $db);
+	/**
+	 * Execute the specified alter script using the given database connection.
+	 *
+	 * @param DatabaseConnection $db
+	 *   Connection to the database to which the alter script is to be applied.
+	 * @param string $path
+	 *   The path to the alter script to execute.
+	 */
+  public function executeAlter(DatabaseConnection $db, $path);
 
 }

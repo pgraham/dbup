@@ -17,8 +17,8 @@ namespace zpt\dbup;
 use \Psr\Log\LoggerAwareInterface;
 use \Psr\Log\LoggerInterface;
 use \Psr\Log\NullLogger;
+use \zpt\db\DatabaseConnection;
 use \Exception;
-use \PDO;
 use \StdClass;
 
 /**
@@ -37,7 +37,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 	private $postAlterExecutor;
 	private $dbVerRetriever;
 
-	public function update(PDO $db, $alterDir) {
+	public function update(DatabaseConnection $db, $alterDir) {
 		$this->ensureDependencies();
 
 		$this->logger->info('Updating database with alters in directory {dir}', [
@@ -58,7 +58,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 			$base = $this->versionParser->parseBase($alterDir);
 			if ($base !== null) {
 				$this->logger->info('Applying base schema');
-				$this->alterExecutor->executeAlter($base, $db);
+				$this->alterExecutor->executeAlter($db, $base);
 			}
 		}
 
@@ -72,8 +72,8 @@ class DatabaseUpdater implements LoggerAwareInterface
 				if (isset($scripts['pre'])) {
 					try {
 						$this->preAlterExecutor->executePreAlter(
-							$scripts['pre'],
 							$db,
+							$scripts['pre'],
 							$data
 						);
 					} catch (Exception $e) {
@@ -85,8 +85,8 @@ class DatabaseUpdater implements LoggerAwareInterface
 				if (isset($scripts['alter'])) {
 					try {
 						$this->alterExecutor->executeAlter(
-							$scripts['alter'],
-							$db
+							$db,
+							$scripts['alter']
 						);
 					} catch (Exception $e) {
 						$db->rollback();
@@ -97,8 +97,8 @@ class DatabaseUpdater implements LoggerAwareInterface
 				if (isset($scripts['post'])) {
 					try {
 						$this->postAlterExecutor->executePostAlter(
-							$scripts['post'],
 							$db,
+							$scripts['post'],
 							$data
 						);
 					} catch (Exception $e) {
