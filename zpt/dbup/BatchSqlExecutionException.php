@@ -14,8 +14,8 @@
  */
 namespace zpt\dbup;
 
-use \zpt\db\exception\DatabaseException;
 use \Exception;
+use \PDOException;
 
 /**
  * Exception class wrapping a PDOException thrown while executing a batch SQL
@@ -33,7 +33,7 @@ class BatchSqlExecutionException extends Exception {
 		$scriptPath,
 		$lineNum,
 		$sql,
-		DatabaseException $cause
+		PDOException $cause
 	) {
 		$this->scriptPath = $scriptPath;
 		$this->lineNum = $lineNum;

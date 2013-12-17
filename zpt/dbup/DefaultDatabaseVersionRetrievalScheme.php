@@ -14,7 +14,7 @@
  */
 namespace zpt\dbup;
 
-use \PDO;
+use \zpt\db\DatabaseConnection;
 
 /**
  * Default DatabaseVersionRetrievalScheme implementation.
@@ -29,7 +29,7 @@ class DefaultDatabaseVersionRetrievalScheme
 	 * Retrieves the maximum value from the column `version` in a table named
 	 * `alters`. The name of the column and table can be injected.
 	 */
-	public function getVersion(PDO $db) {
+	public function getVersion(DatabaseConnection $db) {
 		$stmt = $db->prepare('SELECT MAX(version) FROM alters');
 		$stmt->execute();
 

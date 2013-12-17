@@ -14,7 +14,7 @@
  */
 namespace zpt\dbup;
 
-use \PDO;
+use \zpt\db\DatabaseConnection;
 
 /**
  * Interface for classes which implement a scheme for retrieving the current
@@ -33,6 +33,6 @@ interface DatabaseVersionRetrievalScheme
 	 * @param PDO $db
 	 * @return integer
 	 */
-	public function getVersion(PDO $db);
+	public function getVersion(DatabaseConnection $db);
 
 }

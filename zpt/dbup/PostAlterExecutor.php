@@ -14,6 +14,8 @@
  */
 namespace zpt\dbup;
 
+use \zpt\db\DatabaseConnection;
+
 /**
  * Interface for classes which execute post-alter cleanup scripts.
  *
@@ -24,12 +26,12 @@ interface PostAlterExecutor {
   /**
    * Execute the post-alter script at the given path.
    *
+	 * @param DatabaseConnection $db
+	 *   DatabaseConnection object to which the script should be applied.
    * @param string $path The path to the post-alter script.
-   * @param PDO $db PDO connection to the db to which the script should be 
-   *   applied.
    * @param StdClass $data StdClass instance populated by the an associated 
    *   pre-alter script.
    */
-  public function executePostAlter($path, $db, $data);
+  public function executePostAlter($db, $path, $data);
 
 }

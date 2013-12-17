@@ -14,6 +14,8 @@
  */
 namespace zpt\dbup;
 
+use \zpt\db\DatabaseConnection;
+
 /**
  * Interface for classes with execute pre-alter initizalization PHP scripts.
  *
@@ -24,11 +26,12 @@ interface PreAlterExecutor {
   /**
    * Execute the pre-alter script at the given path.
    *
+	 * @param DatabaseConection $db
+   *   Database connection to which the script is applied
    * @param string $path Path to the pre-alter script
-   * @param PDO $db Database connection to which the script is applied
    * @param Initially empty StdClass instance that can be populated with any 
    *   data that should be passed to an associated post-alter script.
    */
-  public function executePreAlter($path, $db, $data);
+  public function executePreAlter($db, $path, $data);
 
 }

@@ -25,7 +25,7 @@ use \PDOException;
  */
 class BatchSqlExecutor implements AlterExecutor {
 
-	public function executeAlter($path, $db) {
+	public function executeAlter(DatabaseConnection $db, $path) {
 		if (!file_exists($path)) {
 			// TODO If available, log a warning using a PSR-3 logger instance
 			return;
