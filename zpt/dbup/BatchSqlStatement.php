@@ -15,26 +15,58 @@
 namespace zpt\dbup;
 
 /**
- * This class encapsulates a single SQL statement that is part of a larger batch 
+ * This class encapsulates a single SQL statement that is part of a larger batch
  * SQL script.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
 class BatchSqlStatement {
 
-	private $sql;
 	private $lineNum;
+	private $path;
+	private $sql;
 
-	public function __construct($sql, $lineNum) {
+	/**
+	 * Create a new statement object for the given sql.
+	 *
+	 * @param string $sql
+	 *   The SQL statement encapsulated by this statement.
+	 * @param string $path
+	 *   The path to the alter file to which this statement belongs.
+	 * @param int $lineNum
+	 *   The line number of the alter file on which this statement appears.
+	 */
+	public function __construct($sql, $path, $lineNum) {
 		$this->sql = $sql;
+		$this->path = $path;
 		$this->lineNum = $lineNum;
 	}
 
-	public function getSql() {
-		return $this->sql;
-	}
-
+	/**
+	 * Get the line number of the alter file on which the encapsulated statement
+	 * appears.
+	 *
+	 * @return string
+	 */
 	public function getLineNum() {
 		return $this->lineNum;
+	}
+
+	/**
+	 * Get the path to the alter file to which the encapsulated statement belongs.
+	 *
+	 * @return string
+	 */
+	public function getPath() {
+		return $this->path;
+	}
+
+	/**
+	 * Get the encapsulated SQL statement.
+	 *
+	 * @return string
+	 */
+	public function getSql() {
+		return $this->sql;
 	}
 }

@@ -14,8 +14,8 @@
  */
 namespace zpt\dbup;
 
+use \zpt\db\exception\DatabaseException;
 use \zpt\db\DatabaseConnection;
-use \PDOException;
 
 /**
  * This class implements the AlterExecutor interface by breaking the script into
@@ -31,25 +31,24 @@ class BatchSqlExecutor implements AlterExecutor {
 			return;
 		}
 
-		$sql = file_get_contents($path);
-		$stmts = $this->parseStmts($sql);
+		$stmts = $this->parseStmts($path);
 		foreach ($stmts as $stmt) {
-			$stmtSql = $stmt->getSql();
-			try {
-				echo "Executing $stmtSql\n";
-				$db->exec($stmtSql);
-			} catch (PDOException $e) {
-				throw new BatchSqlExecutionException(
-					$path,
-					$stmt->getLineNum(),
-					$stmtSql,
-					$e
-				);
-			}
+			$this->executeStmt($stmt);
 		}
 	}
 
-	private function parseStmts($sql) {
+	private function executeStmt($stmt) {
+		$stmtSql = $stmt->getSql();
+		try {
+			echo "Executing $stmtSql\n";
+			$db->exec($stmtSql);
+		} catch (DatabaseException $e) {
+			throw new BatchSqlExecutionException($stmt, $e);
+		}
+	}
+
+	private function parseStmts($path) {
+		$sql = file_get_contents($path);
 		$stmts = array();
 
 		$lines = explode("\n", $sql);
@@ -73,7 +72,8 @@ class BatchSqlExecutor implements AlterExecutor {
 				$stmtLine = $lineNum;
 			}
 			if (preg_match('/;$/', $line)) {
-				$stmts[] = new BatchSqlStatement(implode(' ', $curStmt), $stmtLine);
+				$completeStmt = implode(' ', $curStmt);
+				$stmts[] = new BatchSqlStatement($completeStmt, $path, $stmtLine);
 				$curStmt = array();
 				$stmtLine = null;
 			}

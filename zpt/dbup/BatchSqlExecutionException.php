@@ -14,44 +14,42 @@
  */
 namespace zpt\dbup;
 
+use \zpt\db\exception\DatabaseException;
 use \Exception;
-use \PDOException;
 
 /**
- * Exception class wrapping a PDOException thrown while executing a batch SQL
- * script.
+ * Exception class wrapping a {@link DatabaseException} thrown while executing 
+ * a batch SQL script.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
 class BatchSqlExecutionException extends Exception {
 
-	private $scriptPath;
-	private $lineNum;
-	private $sql;
+	private $stmt;
 
 	public function __construct(
-		$scriptPath,
-		$lineNum,
-		$sql,
-		PDOException $cause
+		BatchSqlStatment $stmt,
+		DatabaseException $cause
 	) {
-		$this->scriptPath = $scriptPath;
-		$this->lineNum = $lineNum;
-		$this->sql = $sql;
 
+		$this->stmt = $stmt;
+
+		$scriptPath = $stmt->getPath();
+		$lineNum = $stmt->getLineNum();
 		$msg = "$scriptPath:$lineNum: {$cause->getMessage()}";
+
 		parent::__construct($msg, $cause->getCode(), $cause);
 	}
 
 	public function getScriptPath() {
-		return $this->scriptPath;
+		return $this->stmt->getPath();
 	}
 
 	public function getLineNum() {
-		return $this->lineNum;
+		return $this->stmt->getLineNum();
 	}
 
 	public function getSql() {
-		return $this->sql;
+		return $this->stmt->getSql();
 	}
 }
