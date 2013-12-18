@@ -5,7 +5,7 @@
  * All rights reserved.
  *
  * This file is part of dbUp and is licensed by the Copyright holder under the
- * 3-clause BSD License.  The full text of the license can be found in the
+ * 3-clause BSD License.	The full text of the license can be found in the
  * LICENSE.txt file included in the root directory of this distribution or at
  * the link below.
  * =============================================================================
@@ -23,20 +23,22 @@ use \Exception;
  */
 class DatabaseUpdateException extends Exception {
 
-  private $_version;
-  private $_phose;
+	private $version;
+	private $phase;
 
-  public function __construct($version, $phase, $cause = null) {
-    parent::__construct("Database updating failed on $version in the $phase phase.", 0, $cause);
-    $this->_version = $version;
-    $this->_phase = $phase;
-  }
+	public function __construct($version, $phase, $cause = null) {
+		$this->version = $version;
+		$this->phase = $phase;
 
-  public function getVersion() {
-    return $this->_version;
-  }
+		$msg = "Database updating failed on $version in the $phase phase.";
+		parent::__construct($msg, 0, $cause);
+	}
 
-  public function getPhase() {
-    return $this->_phase;
-  }
+	public function getVersion() {
+		return $this->version;
+	}
+
+	public function getPhase() {
+		return $this->phase;
+	}
 }
