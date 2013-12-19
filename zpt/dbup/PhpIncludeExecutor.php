@@ -14,13 +14,20 @@
  */
 namespace zpt\dbup;
 
+use \Psr\Log\LoggerInterface;
+use \Psr\Log\LoggerAwareInterface;
+
 /**
  * This class implements both the PreAlterExecutor and PostAlterExecutor
  * interfaces by simply doing a PHP include of the pre/post alter scripts.
  * Any data returned from the pre alter will be passed to the post alter in the
  * global variable $DBUP_DATA.
  */
-class PhpIncludeExecutor implements PreAlterExecutor, PostAlterExecutor {
+class PhpIncludeExecutor
+	implements PreAlterExecutor, PostAlterExecutor, LoggerAwareInterface
+{
+
+	private $logger;
 
 	/**
 	 * Execute the specified pre-alter script.
@@ -38,7 +45,10 @@ class PhpIncludeExecutor implements PreAlterExecutor, PostAlterExecutor {
 	 */
 	public function executePreAlter($path, $db, $data) {
 		if (!file_exists($path)) {
-			// TODO If available, use a PSR-3 logger to output a warning
+			if ($this->logger !== null) {
+				$msg = "Cannot execute pre-alter, file does not exist: $path";
+				$this->logger->warning($msg);
+			}
 			return;
 		}
 
@@ -74,4 +84,9 @@ class PhpIncludeExecutor implements PreAlterExecutor, PostAlterExecutor {
 
 		include $path;
 	}
+
+	public function setLogger(LoggerInterface $logger) {
+		$this->logger = $logger;
+	}
+
 }

@@ -112,28 +112,64 @@ class DatabaseUpdater implements LoggerAwareInterface
 		$db->commit();
 	}
 
+	/**
+	 * Set the AlterExecutor. If not specified a {@link BatchSqlExecutor} will be
+	 * used.
+	 *
+	 * @param AlterExecutor $alterExecutor
+	 */
 	public function setAlterExecutor(AlterExecutor $alterExecutor) {
 		$this->alterExecutor = $alterExecutor;
 	}
 
+	/**
+	 * Set the DatabaseVersionRetrievalScheme. If not specified a
+	 * {@link DefaultDatabaseVersionRetrievalScheme} will be used.
+	 *
+	 * @param DatabaseVersionRetrievalScheme $dbVerRetriever
+	 */
 	public function setDatabaseVersionRetrievalScheme(
 		DatabaseVersionRetrievalScheme $dbVerRetriever
 	) {
 		$this->dbVerRetriever = $dbVerRetriever;
 	}
 
+	/**
+	 * Set the logger for the DatabaseUpdater instance. If not specified a
+	 * {@link NullLogger} will be used.
+	 *
+	 * @param LoggerInterface $logger
+	 */
 	public function setLogger(LoggerInterface $logger) {
 		$this->logger = $logger;
 	}
 
-	public function setPostAlterExecutor(PostAlterExecutor $postAlterExecutor) {
-		$this->postAlterExecutor = $postAlterExecutor;
+	/**
+	 * Set the PostAlterExecutor. If not specified a {@link PhpIncludeExecutor}
+	 * will be used.
+	 *
+	 * @param PostAlterExecutor $executor
+	 */
+	public function setPostAlterExecutor(PostAlterExecutor $executor) {
+		$this->postAlterExecutor = $executor;
 	}
 
+	/**
+	 * Set the PreAlterExecutor. If not specified a {@link PhpIncludeExecutor}
+	 * will be used.
+	 *
+	 * @param PreAlterExecutor $executor
+	 */
 	public function setPreAlterExecutor(PreAlterExecutor $preAlterExecutor) {
 		$this->preAlterExecutor = $preAlterExecutor;
 	}
 
+	/**
+	 * Set the VersionParser. If not specified a {@link FsVersionParser} will be
+	 * used.
+	 *
+	 * @param VersionParser $versionParser
+	 */
 	public function setVersionParser(VersionParser $versionParser) {
 		$this->versionParser = $versionParser;
 	}
@@ -146,6 +182,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 
 		if ($this->preAlterExecutor === null || $this->postAlterExecutor === null) {
 			$inclExecutor = new PhpIncludeExecutor();
+			$inclExecutor->setLogger($this->logger);
 
 			if ($this->preAlterExecutor === null) {
 				$this->preAlterExecutor = $inclExecutor;
@@ -158,10 +195,12 @@ class DatabaseUpdater implements LoggerAwareInterface
 
 		if ($this->alterExecutor === null) {
 			$this->alterExecutor = new BatchSqlExecutor();
+			$this->alterExecutor->setLogger($this->logger);
 		}
 
 		if ($this->versionParser === null) {
 			$this->versionParser = new FsVersionParser();
+			$this->versionParser->setLogger($this->logger);
 		}
 
 		if ($this->dbVerRetriever === null) {
