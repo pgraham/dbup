@@ -18,6 +18,11 @@ use \Psr\Log\LoggerAwareInterface;
 use \Psr\Log\LoggerInterface;
 use \Psr\Log\NullLogger;
 use \zpt\db\DatabaseConnection;
+use \zpt\db\executor\AlterExector;
+use \zpt\db\executor\BatchSqlExecutor;
+use \zpt\db\executor\PhpIncludeExector;
+use \zpt\db\executor\PostAlterExecutor;
+use \zpt\db\executor\PreAlterExecutor;
 use \Exception;
 use \StdClass;
 

@@ -12,7 +12,7 @@
  *
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
-namespace zpt\dbup;
+namespace zpt\dbup\executor;
 
 use \Psr\Log\LoggerInterface;
 use \Psr\Log\LoggerAwareInterface;

@@ -12,25 +12,26 @@
  *
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
-namespace zpt\dbup;
+namespace zpt\dbup\executor;
 
 use \zpt\db\DatabaseConnection;
 
 /**
- * Interface for classes with execute database alter SQL files.
+ * Interface for classes with execute pre-alter initizalization PHP scripts.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-interface AlterExecutor {
+interface PreAlterExecutor {
 
-	/**
-	 * Execute the specified alter script using the given database connection.
-	 *
-	 * @param DatabaseConnection $db
-	 *   Connection to the database to which the alter script is to be applied.
-	 * @param string $path
-	 *   The path to the alter script to execute.
-	 */
-  public function executeAlter(DatabaseConnection $db, $path);
+  /**
+   * Execute the pre-alter script at the given path.
+   *
+	 * @param DatabaseConection $db
+   *   Database connection to which the script is applied
+   * @param string $path Path to the pre-alter script
+   * @param Initially empty StdClass instance that can be populated with any 
+   *   data that should be passed to an associated post-alter script.
+   */
+  public function executePreAlter($db, $path, $data);
 
 }
