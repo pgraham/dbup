@@ -14,8 +14,8 @@
  */
 namespace zpt\dbup\executor;
 
-use \Psr\Log\LoggerInterface;
 use \Psr\Log\LoggerAwareInterface;
+use \Psr\Log\LoggerAwareTrait;
 use \zpt\db\exception\DatabaseException;
 use \zpt\db\DatabaseConnection;
 
@@ -26,11 +26,10 @@ use \zpt\db\DatabaseConnection;
  * @author Philip Graham <philip@zeptech.ca>
  */
 class BatchSqlExecutor implements AlterExecutor, LoggerAwareInterface {
-
-	private $logger;
+	use LoggerAwareTrait;
 
 	/**
-	 * Execute the SQL statements found in the script against the provided 
+	 * Execute the SQL statements found in the script against the provided
 	 * database connection.
 	 */
 	public function executeAlter(DatabaseConnection $db, $path) {
@@ -87,9 +86,5 @@ class BatchSqlExecutor implements AlterExecutor, LoggerAwareInterface {
 		}
 
 		return $stmts;
-	}
-
-	public function setLogger(LoggerInterface $logger) {
-		$this->logger = $logger;
 	}
 }

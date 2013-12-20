@@ -14,6 +14,8 @@
  */
 namespace zpt\dbup;
 
+use \Psr\Log\LoggerAwareInterface;
+use \Psr\Log\LoggerAwareTrait;
 use \zpt\db\DatabaseConnection;
 
 /**
@@ -22,15 +24,19 @@ use \zpt\db\DatabaseConnection;
  * @author Philip Graham <philip@zeptech.ca>
  */
 class DefaultDatabaseVersionRetrievalScheme
-	implements DatabaseVersionRetrievalScheme
+	implements DatabaseVersionRetrievalScheme, LoggerAwareInterface
 {
+	use LoggerAwareTrait;
+
+	private $column;
+	private $table;
 
 	/**
 	 * Retrieves the maximum value from the column `version` in a table named
 	 * `alters`. The name of the column and table can be injected.
 	 */
 	public function getVersion(DatabaseConnection $db) {
-		$stmt = $db->prepare('SELECT MAX(version) FROM alters');
+		$stmt = $db->prepare("SELECT MAX($this->column) FROM $this->table");
 		$stmt->execute();
 
 		$version = $stmt->fetchColumn();
@@ -40,4 +46,13 @@ class DefaultDatabaseVersionRetrievalScheme
 
 		return $version;
 	}
+
+	public function setColumn($column) {
+		$this->column = $column;
+	}
+
+	public function setTable($table) {
+		$this->table = $table;
+	}
+
 }

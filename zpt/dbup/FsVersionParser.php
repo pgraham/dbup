@@ -14,6 +14,8 @@
  */
 namespace zpt\dbup;
 
+use \Psr\Log\LoggerAwareInterface;
+use \Psr\Log\LoggerAwareTrait;
 use \DirectoryIterator;
 
 /**
@@ -21,7 +23,8 @@ use \DirectoryIterator;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class FsVersionParser implements VersionParser {
+class FsVersionParser implements VersionParser, LoggerAwareInterface {
+  use LoggerAwareTrait;
 
   const ALTER_REGEX = '/^alter-0*([1-9][0-9]*)\.sql$/';
   const PRE_ALTER_REGEX = '/^pre-alter-0*([1-9][0-9]*)\.php$/';
