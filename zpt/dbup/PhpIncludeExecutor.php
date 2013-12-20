@@ -14,8 +14,8 @@
  */
 namespace zpt\dbup;
 
-use \Psr\Log\LoggerInterface;
 use \Psr\Log\LoggerAwareInterface;
+use \Psr\Log\LoggerAwareTrait;
 
 /**
  * This class implements both the PreAlterExecutor and PostAlterExecutor
@@ -26,8 +26,7 @@ use \Psr\Log\LoggerAwareInterface;
 class PhpIncludeExecutor
 	implements PreAlterExecutor, PostAlterExecutor, LoggerAwareInterface
 {
-
-	private $logger;
+	use LoggerAwareTrait;
 
 	/**
 	 * Execute the specified pre-alter script.
@@ -84,9 +83,4 @@ class PhpIncludeExecutor
 
 		include $path;
 	}
-
-	public function setLogger(LoggerInterface $logger) {
-		$this->logger = $logger;
-	}
-
 }

@@ -15,7 +15,7 @@
 namespace zpt\dbup;
 
 use \Psr\Log\LoggerAwareInterface;
-use \Psr\Log\LoggerInterface;
+use \Psr\Log\LoggerAwareTrait;
 use \Psr\Log\NullLogger;
 use \zpt\db\DatabaseConnection;
 use \Exception;
@@ -28,8 +28,8 @@ use \StdClass;
  */
 class DatabaseUpdater implements LoggerAwareInterface
 {
+	use LoggerAwareTrait;
 
-	private $logger;
 
 	private $versionParser;
 	private $preAlterExecutor;
@@ -135,16 +135,6 @@ class DatabaseUpdater implements LoggerAwareInterface
 	}
 
 	/**
-	 * Set the logger for the DatabaseUpdater instance. If not specified a
-	 * {@link NullLogger} will be used.
-	 *
-	 * @param LoggerInterface $logger
-	 */
-	public function setLogger(LoggerInterface $logger) {
-		$this->logger = $logger;
-	}
-
-	/**
 	 * Set the PostAlterExecutor. If not specified a {@link PhpIncludeExecutor}
 	 * will be used.
 	 *
@@ -205,6 +195,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 
 		if ($this->dbVerRetriever === null) {
 			$this->dbVerRetriever = new DefaultDatabaseVersionRetrievalScheme();
+			$this->dbVerRetriever->setLogger($this->logger);
 		}
 	}
 

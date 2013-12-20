@@ -14,6 +14,8 @@
  */
 namespace zpt\dbup;
 
+use \Psr\Log\LoggerAwareInterface;
+use \Psr\Log\LoggerAwareTrait;
 use \zpt\db\DatabaseConnection;
 
 /**
@@ -22,8 +24,9 @@ use \zpt\db\DatabaseConnection;
  * @author Philip Graham <philip@zeptech.ca>
  */
 class DefaultDatabaseVersionRetrievalScheme
-	implements DatabaseVersionRetrievalScheme
+	implements DatabaseVersionRetrievalScheme, LoggerAwareInterface
 {
+	use LoggerAwareTrait;
 
 	/**
 	 * Retrieves the maximum value from the column `version` in a table named
