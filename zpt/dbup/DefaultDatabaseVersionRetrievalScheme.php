@@ -31,6 +31,10 @@ class DefaultDatabaseVersionRetrievalScheme
 	private $column;
 	private $table;
 
+	public function __construct() {
+		$this->column = 'version';
+	}
+
 	/**
 	 * Retrieves the maximum value from the column `version` in a table named
 	 * `alters`. The name of the column and table can be injected.
