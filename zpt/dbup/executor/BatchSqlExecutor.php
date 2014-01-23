@@ -18,6 +18,8 @@ use \Psr\Log\LoggerAwareInterface;
 use \Psr\Log\LoggerAwareTrait;
 use \zpt\db\exception\DatabaseException;
 use \zpt\db\DatabaseConnection;
+use \zpt\dbup\script\SqlScript;
+use \zpt\dbup\script\SqlScriptStatementFactory;
 
 /**
  * This class implements the AlterExecutor interface by breaking the script into
@@ -28,63 +30,32 @@ use \zpt\db\DatabaseConnection;
 class BatchSqlExecutor implements AlterExecutor, LoggerAwareInterface {
 	use LoggerAwareTrait;
 
+	private $sqlStatementParser;
+	private $sqlScriptStatementFactory;
+
+	public function __construct() {
+		$this->sqlStatementParser = new SqlStatementParser();
+		$this->sqlScriptStatementFactory = new SqlScriptStatementFactory();
+	}
+
 	/**
 	 * Execute the SQL statements found in the script against the provided
 	 * database connection.
 	 */
 	public function executeAlter(DatabaseConnection $db, $path) {
 		if (!file_exists($path)) {
-			// TODO If available, log a warning using a PSR-3 logger instance
+			$msg = "Unable to execute script, it does not exist: $path";
+			$this->logger->warning($msg);
 			return;
 		}
 
-		$stmts = $this->parseStmts($path);
+		$stmts = $this->sqlStatementParser->parse(file_get_contents($path));
+		$scriptStmts = [];
 		foreach ($stmts as $stmt) {
-			$this->executeStmt($stmt);
-		}
-	}
-
-	private function executeStmt($stmt) {
-		$stmtSql = $stmt->getSql();
-		try {
-			$db->exec($stmtSql);
-		} catch (DatabaseException $e) {
-			throw new BatchSqlExecutionException($stmt, $e);
-		}
-	}
-
-	private function parseStmts($path) {
-		$sql = file_get_contents($path);
-		$stmts = array();
-
-		$lines = explode("\n", $sql);
-		$curStmt = array();
-		$stmtLine = null;
-		foreach ($lines as $idx => $line) {
-			if (trim($line) === '') {
-				continue;
-			}
-			if (preg_match('/^\s*--/', $line)) {
-				continue;
-			}
-
-			$lineNum = $idx + 1;
-
-			// Remove any trailing comments from the line
-			$line = preg_replace('/--.*$/', '', $line);
-
-			$curStmt[] = $line;
-			if ($stmtLine === null) {
-				$stmtLine = $lineNum;
-			}
-			if (preg_match('/;$/', $line)) {
-				$completeStmt = implode(' ', $curStmt);
-				$stmts[] = new BatchSqlStatement($completeStmt, $path, $stmtLine);
-				$curStmt = array();
-				$stmtLine = null;
-			}
+			$scriptStmts[] = $this->sqlScriptStatementFactory->create($stmt);
 		}
 
-		return $stmts;
+		$sqlScript = new SqlScript($scriptStmts);
+		$sqlScript->execute($db);
 	}
 }

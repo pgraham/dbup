@@ -20,7 +20,7 @@ namespace zpt\dbup;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class BatchSqlStatement {
+class SqlStatement {
 
 	private $lineNum;
 	private $path;
