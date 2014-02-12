@@ -11,8 +11,8 @@
 		}
 	],
 	"autoload": {
-		"psr-0": {
-			"zpt\\dbup": ""
+		"psr-4": {
+			"zpt\\dbup\\": "src/"
 		}
 	},
 	"minimum-stability": "dev",
