@@ -25,7 +25,7 @@ $loader->register();
 
 // Find composer vendor director. If this is a standalone installation it will
 // be in the root directory of the package. If it is a dependency of another
-// package this package will be in the vendor directory.
+// package this package will itself be in the vendor directory.
 
 $dir = __DIR__ . '/..';
 while (!file_exists($dir . DIRECTORY_SEPARATOR . 'vendor')) {

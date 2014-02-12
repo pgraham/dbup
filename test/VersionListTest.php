@@ -14,7 +14,7 @@
  */
 namespace zpt\dbup;
 
-require_once __DIR__ . '/test-common.php';
+require_once __DIR__ . '/setup.php';
 
 use \PHPUnit_Framework_TestCase as TestCase;
 use \zpt\dbup\VersionList;

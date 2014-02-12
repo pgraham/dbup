@@ -14,7 +14,7 @@
  */
 namespace zpt\dbup\test;
 
-require_once __DIR__ . '/test-common.php';
+require_once __DIR__ . '/setup.php';
 
 use \zpt\dbup\FsVersionParser;
 use \Mockery as M;
@@ -61,6 +61,6 @@ class FsVersionParserTest extends TestCase {
     $fsVersionParser->setPathIteratorFactory($pathIteratorFactory);
 
     $versions = $fsVersionParser->parseVersions($alterDir);
-    print_r($versions);
+
   }
 }
