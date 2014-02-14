@@ -26,8 +26,8 @@ interface DatabaseVersionRetrievalScheme
 {
 
 	/**
-	 * Retrieve the database version using the given connection. Connection MUST 
-	 * be connected to a database, not just a database engine. The returned 
+	 * Retrieve the database version using the given connection. Connection MUST
+	 * be connected to a database, not just a database engine. The returned
 	 * version SHOULD be an integer.
 	 *
 	 * @param PDO $db

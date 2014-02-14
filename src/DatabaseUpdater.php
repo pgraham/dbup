@@ -18,11 +18,11 @@ use \Psr\Log\LoggerAwareInterface;
 use \Psr\Log\LoggerAwareTrait;
 use \Psr\Log\NullLogger;
 use \zpt\db\DatabaseConnection;
-use \zpt\db\executor\AlterExector;
-use \zpt\db\executor\BatchSqlExecutor;
-use \zpt\db\executor\PhpIncludeExector;
-use \zpt\db\executor\PostAlterExecutor;
-use \zpt\db\executor\PreAlterExecutor;
+use \zpt\dbup\executor\AlterExecutor;
+use \zpt\dbup\executor\BatchSqlExecutor;
+use \zpt\dbup\executor\PhpIncludeExector;
+use \zpt\dbup\executor\PostAlterExecutor;
+use \zpt\dbup\executor\PreAlterExecutor;
 use \Exception;
 use \StdClass;
 
@@ -67,7 +67,6 @@ class DatabaseUpdater implements LoggerAwareInterface
 			}
 		}
 
-		$versions = array();
 		foreach ($versions as $version => $scripts) {
 
 			$data = new StdClass();

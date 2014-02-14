@@ -39,45 +39,50 @@ class DatabaseUpdaterTest extends TestCase {
 
     // Mock dependencies and setup expectations
     // -------------------------------------------------------------------------
-    $pdo = new PdoExt([
-      'driver' => 'sqlite',
-      'database' => ':memory:',
-      'username' => null,
-      'password' => null
-    ]);
-    $db = M::mock($pdo);
+    $db = M::mock('zpt\db\DatabaseConnection');
     $db->shouldReceive('beginTransaction')->withNoArgs()->once();
     $db->shouldReceive('commit')->withNoArgs()->once();
     $db->shouldReceive('rollback')->never();
 
     // Create the VersionList returned by the mock version parser
-    $versions = mockIteratorOver(array(
-      1 => array(
+    $versions = [
+      1 => [
         'alter' => "$dbDir/alter-000001.sql",
         'pre' => "$dbDir/pre-alter-000001.php",
         'post' => "$dbDir/post-alter-000001.php"
-      )
-    ));
+      ]
+    ];
+    $versionsIter = mockIteratorOver($versions);
 
     $versionParser = M::mock('zpt\dbup\VersionParser')
       ->shouldReceive('parseVersions')
       ->with($dbDir)
-      ->andReturn($versions)
+      ->andReturn($versionsIter)
       ->getMock();
 
-    $preAlterExecutor = M::mock('zpt\dbup\PreAlterExecutor')
-      ->shouldReceive('execute')
-      ->with("$dbDir/pre-alter-000001.php", $db, anInstanceOf('stdClass'))
+    $versionParser
+      ->shouldReceive('parseBase')
+      ->andReturn(null);
+
+    $preAlterExecutor = M::mock('zpt\dbup\executor\PreAlterExecutor')
+      ->shouldReceive('executePreAlter')
+      ->with($db, $versions[1]['pre'], anInstanceOf('stdClass'))
       ->getMock();
 
-    $alterExecutor = M::mock('zpt\dbup\AlterExecutor')
-      ->shouldReceive('execute')
-      ->with("$dbDir/alter-000001.sql", $db)
+    $alterExecutor = M::mock('zpt\dbup\executor\AlterExecutor')
+      ->shouldReceive('executeAlter')
+      ->with($db, $versions[1]['alter'])
       ->getMock();
 
-    $postAlterExecutor = M::mock('zpt\dbup\PostAlterExecutor')
-      ->shouldReceive('execute')
-      ->with("$dbDir/post-alter-000001.php", $db, anInstanceOf('stdClass'))
+    $postAlterExecutor = M::mock('zpt\dbup\executor\PostAlterExecutor')
+      ->shouldReceive('executePostAlter')
+      ->with($db, $versions[1]['post'], anInstanceOf('stdClass'))
+      ->getMock();
+
+    $dbVerRetriever = M::mock('zpt\dbup\DatabaseVersionRetrievalScheme')
+      ->shouldReceive('getVersion')->once()
+      ->with($db)
+      ->andReturn(null)
       ->getMock();
 
     // Set object under test and its mocked dependencies
@@ -87,6 +92,7 @@ class DatabaseUpdaterTest extends TestCase {
     $dbup->setPreAlterExecutor($preAlterExecutor);
     $dbup->setAlterExecutor($alterExecutor);
     $dbup->setPostAlterExecutor($postAlterExecutor);
+    $dbup->setDatabaseVersionRetrievalScheme($dbVerRetriever);
 
     // Run the update to exercise the object
     // -------------------------------------------------------------------------
@@ -98,40 +104,51 @@ class DatabaseUpdaterTest extends TestCase {
 
     // Mock dependencies and setup expectations
     // -------------------------------------------------------------------------
-    $db = M::mock('db');
+    $db = M::mock('zpt\db\DatabaseConnection');
     $db->shouldReceive('beginTransaction')->withNoArgs()->once();
     $db->shouldReceive('rollback')->withNoArgs()->once();
     $db->shouldReceive('commit')->never();
 
     // Create the VersionList returned by the mock version parser
-    $versions = mockIteratorOver(array(
-      1 => array(
+    $versions = [
+      1 => [
         'alter' => "$dbDir/alter-000001.sql",
         'pre' => "$dbDir/pre-alter-000001.php",
         'post' => "$dbDir/post-alter-000001.php"
-      )
-    ), 'Iterator', false, 1);
+      ]
+    ];
+    $versionsIter = mockIteratorOver($versions, 'Iterator', false, 1);
 
     $versionParser = M::mock('zpt\dbup\VersionParser')
       ->shouldReceive('parseVersions')
       ->with($dbDir)
-      ->andReturn($versions)
+      ->andReturn($versionsIter)
       ->getMock();
 
-    $preAlterExecutor = M::mock('zpt\dbup\PreAlterExecutor')
+    $versionParser
+      ->shouldReceive('parseBase')
+      ->andReturn(null);
+
+    $preAlterExecutor = M::mock('zpt\dbup\executor\PreAlterExecutor')
       ->shouldReceive('execute')
-      ->with("$dbDir/pre-alter-000001.php", $db, anInstanceOf('stdClass'))
+      ->with($versions[1]['pre'], $db, anInstanceOf('stdClass'))
       ->andThrow(new Exception())
       ->getMock();
 
-    $alterExecutor = M::mock('zpt\dbup\AlterExecutor')
+    $alterExecutor = M::mock('zpt\dbup\executor\AlterExecutor')
       ->shouldReceive('execute')
       ->never()
       ->getMock();
 
-    $postAlterExecutor = M::mock('zpt\dbup\PostAlterExecutor')
+    $postAlterExecutor = M::mock('zpt\dbup\executor\PostAlterExecutor')
       ->shouldReceive('execute')
       ->never()
+      ->getMock();
+
+    $dbVerRetriever = M::mock('zpt\dbup\DatabaseVersionRetrievalScheme')
+      ->shouldReceive('getVersion')->once()
+      ->with($db)
+      ->andReturn(null)
       ->getMock();
 
     // Set object under test and its mocked dependencies
@@ -141,6 +158,7 @@ class DatabaseUpdaterTest extends TestCase {
     $dbup->setPreAlterExecutor($preAlterExecutor);
     $dbup->setAlterExecutor($alterExecutor);
     $dbup->setPostAlterExecutor($postAlterExecutor);
+    $dbup->setDatabaseVersionRetrievalScheme($dbVerRetriever);
 
     // Run the update to exercise the object
     // -------------------------------------------------------------------------

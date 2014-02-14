@@ -30,7 +30,7 @@ class DatabaseUpdateException extends Exception {
 		$this->version = $version;
 		$this->phase = $phase;
 
-		$msg = "Database updating failed on $version in the $phase phase.";
+		$msg = "Database updating failed on version $version in the $phase phase.";
 		parent::__construct($msg, 0, $cause);
 	}
 

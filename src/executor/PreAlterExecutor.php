@@ -29,7 +29,7 @@ interface PreAlterExecutor {
 	 * @param DatabaseConection $db
    *   Database connection to which the script is applied
    * @param string $path Path to the pre-alter script
-   * @param Initially empty StdClass instance that can be populated with any 
+   * @param Initially empty StdClass instance that can be populated with any
    *   data that should be passed to an associated post-alter script.
    */
   public function executePreAlter($db, $path, $data);
