@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- * Copyright (c) 2012, Philip Graham
+ * Copyright (c) 2014, Philip Graham
  * All rights reserved.
  *
  * This file is part of dbUp and is licensed by the Copyright holder under the
@@ -17,21 +17,29 @@ namespace zpt\dbup\script;
 use zpt\db\DatabaseConnection;
 
 /**
- * Interface for SQL statements that are part of an {@link SqlScript}
+ * This class parses and executes SQL scripts against a {@link
+ * DatabaseConnection}.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-interface SqlScriptStatement
+class SqlScriptExecutor
 {
 
+	private $db;
+
 	/**
-	 * Execute the statement against the specified database.
-	 *
-	 * @param DatabaseConnection $db
-	 *   Connection to the database against which the statement should be applied.
-	 * @param SqlScriptState $state
-	 *   The current state of the the SQL script of which the statement is a part.
+	 * Create a new script executor for the given {@link DatabaseConnection}
 	 */
-	public function execute(DatabaseConnection $db, SqlScriptState $state);
+	public function __construct(DatabaseConnection $db) {
+		$this->db = $db;
+	}
+
+	public function execute($filename) {
+		$scriptSrc = file_get_contents($filename);
+		$parser = new SqlScriptParser();
+		$script = $parser->parse($scriptSrc);
+
+		return $script->execute($this->db);
+	}
 
 }

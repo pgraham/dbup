@@ -15,6 +15,9 @@
 namespace zpt\dbup\script;
 
 use \zpt\db\DatabaseConnection;
+use Countable;
+use Iterator;
+use OutOfBoundsException;
 
 /**
  * This class encapsulates an SQL script using dbUp's own augmented SQL. For
@@ -23,10 +26,10 @@ use \zpt\db\DatabaseConnection;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class SqlScript
+class SqlScript implements Countable, Iterator
 {
 
-	private $stmts;
+	private $stmts = [];
 
 	/**
 	 * Create a new SqlScript containing the given list of
@@ -34,22 +37,54 @@ class SqlScript
 	 *
 	 * @param SqlScriptStatement[] $stmts
 	 */
-	public function __construct($stmts) {
+	public function __construct(array $stmts = []) {
 		$this->stmts = $stmts;
 	}
 
 	public function execute(DatabaseConnection $db) {
-
 		$state = new SqlScriptState();
-
 		foreach ($this->stmts as $stmt) {
-			try {
-				$stmt->execute($db, $state);
-			} catch (DatabaseException $e) {
-				throw new BatchSqlExecutionException($stmt, $e);
-			}
+			$stmt->execute($db, $state);
 		}
 
+		// Return final state of SQL script so that variable values can be used in 
+		// subsequent processing without requiring an addition query.
+		return $state;
 	}
 
+	/*
+	 * ---------------------------------------------------------------------------
+	 * Countable
+	 * ---------------------------------------------------------------------------
+	 */
+
+	public function count() {
+		return count($this->stmts);
+	}
+
+	/*
+	 * ---------------------------------------------------------------------------
+	 * Iterator
+	 * ---------------------------------------------------------------------------
+	 */
+
+	public function current() {
+		return current($this->stmts);
+	}
+
+	public function key() {
+		return key($this->stmts);
+	}
+
+	public function next() {
+		return next($this->stmts);
+	}
+
+	public function rewind() {
+		return reset($this->stmts);
+	}
+
+	public function valid() {
+		return current($this->stmts) !== false;
+	}
 }

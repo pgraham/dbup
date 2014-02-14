@@ -22,4 +22,17 @@ namespace zpt\dbup\script;
 class SqlScriptState
 {
 
+	private $vars = [];
+
+	public function assignVariable($name, $value) {
+		$this->vars[$name] = $value;
+	}
+
+	public function __get($name) {
+		if (isset($this->vars[$name])) {
+			return $this->vars[$name];
+		}
+		return null;
+	}
+
 }

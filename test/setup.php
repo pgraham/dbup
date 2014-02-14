@@ -13,13 +13,6 @@
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
 
-// Initialize Mockery
-// -----------------------------------------------------------------------------
-require 'Mockery/Loader.php';
-require 'Hamcrest/Hamcrest.php';
-$loader = new \Mockery\Loader();
-$loader->register();
-
 // Register composer autoloader.
 // -----------------------------------------------------------------------------
 
@@ -29,6 +22,9 @@ $loader->register();
 
 $dir = __DIR__ . '/..';
 while (!file_exists($dir . DIRECTORY_SEPARATOR . 'vendor')) {
+  if ($dir === '/') {
+    throw new Exception("Composer install directory not found.");
+  }
   $dir = dirname($dir);
 }
 $composerAutoloaderPath = implode(DIRECTORY_SEPARATOR, [

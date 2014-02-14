@@ -29,13 +29,10 @@ class SqlScriptStatementFactory {
 	 *
 	 * @param string $stmt
 	 */
-	public function create($stmt) {
-
-		if (preg_match('/^CREATE TABLE\s*\(', $stmt)) {
-			return new CreateTableStatement($stmt);
-		} else {
-			return new SqlStatement($stmt);
+	public function createFor($stmt) {
+		if (preg_match('/^\S+\s*:=\s*INSERT\s+/', $stmt)) {
+			return new InsertSqlScriptStatement($stmt);
 		}
-
+		return new SimpleSqlScriptStatement($stmt);
 	}
 }
