@@ -40,7 +40,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 	private $preAlterExecutor;
 	private $alterExecutor;
 	private $postAlterExecutor;
-	private $dbVerRetriever;
+	private $dbVerManager;
 
 	public function update(DatabaseConnection $db, $alterDir) {
 		$this->ensureDependencies();
@@ -53,7 +53,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 
 		$versions = $this->versionParser->parseVersions($alterDir);
 
-		$curVersion = $this->dbVerRetriever->getVersion($db);
+		$curVersion = $this->dbVerManager->getCurrentVersion($db);
 		$this->logger->info('Current database version is {dbVersion}', [
 			'dbVersion' => $curVersion === null ? 'unintialized' : $curVersion
 		]);
@@ -74,6 +74,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 			if ($version > $curVersion) {
 				$this->logger->info('Applying alter {alter}', [ 'alter' => $version ]);
 				if (isset($scripts['pre'])) {
+					$this->logger->debug('Running PHP pre-alter script');
 					try {
 						$this->preAlterExecutor->executePreAlter(
 							$db,
@@ -87,6 +88,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 				}
 
 				if (isset($scripts['alter'])) {
+					$this->logger->debug('Apply SQL alter');
 					try {
 						$this->alterExecutor->executeAlter(
 							$db,
@@ -99,6 +101,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 				}
 
 				if (isset($scripts['post'])) {
+					$this->logger->debug('Running PHP post-alter script');
 					try {
 						$this->postAlterExecutor->executePostAlter(
 							$db,
@@ -110,6 +113,8 @@ class DatabaseUpdater implements LoggerAwareInterface
 						throw new DatabaseUpdateException($version, 'post', $e);
 					}
 				}
+
+				$this->dbVerManager->setCurrentVersion($db, $version);
 			}
 		}
 
@@ -132,10 +137,10 @@ class DatabaseUpdater implements LoggerAwareInterface
 	 *
 	 * @param DatabaseVersionRetrievalScheme $dbVerRetriever
 	 */
-	public function setDatabaseVersionRetrievalScheme(
-		DatabaseVersionRetrievalScheme $dbVerRetriever
+	public function setDatabaseVersionManager(
+		DatabaseVersionManager $dbVerManager
 	) {
-		$this->dbVerRetriever = $dbVerRetriever;
+		$this->dbVerManager = $dbVerManager;
 	}
 
 	/**
@@ -197,9 +202,9 @@ class DatabaseUpdater implements LoggerAwareInterface
 			$this->versionParser->setLogger($this->logger);
 		}
 
-		if ($this->dbVerRetriever === null) {
-			$this->dbVerRetriever = new DefaultDatabaseVersionRetrievalScheme();
-			$this->dbVerRetriever->setLogger($this->logger);
+		if ($this->dbVerManager === null) {
+			$this->dbVerManager = new DefaultDatabaseVersionManager();
+			$this->dbVerManager->setLogger($this->logger);
 		}
 	}
 

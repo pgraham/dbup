@@ -17,12 +17,12 @@ namespace zpt\dbup;
 use \zpt\db\DatabaseConnection;
 
 /**
- * Interface for classes which implement a scheme for retrieving the current
- * alter version of a database.
+ * Interface for classes which implement a scheme for storing a database's
+ * current version.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-interface DatabaseVersionRetrievalScheme
+interface DatabaseVersionManager
 {
 
 	/**
@@ -33,6 +33,14 @@ interface DatabaseVersionRetrievalScheme
 	 * @param PDO $db
 	 * @return integer
 	 */
-	public function getVersion(DatabaseConnection $db);
+	public function getCurrentVersion(DatabaseConnection $db);
+
+	/**
+	 * Set the database's current version.
+	 *
+	 * @param DatabaseConnection $db
+	 * @param mixed $version;
+	 */
+	public function setCurrentVersion(DatabaseConnection $db, $version);
 
 }

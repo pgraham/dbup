@@ -79,11 +79,14 @@ class DatabaseUpdaterTest extends TestCase {
       ->with($db, $versions[1]['post'], anInstanceOf('stdClass'))
       ->getMock();
 
-    $dbVerRetriever = M::mock('zpt\dbup\DatabaseVersionRetrievalScheme')
-      ->shouldReceive('getVersion')->once()
+    $dbVerRetriever = M::mock('zpt\dbup\DatabaseVersionManager');
+    $dbVerRetriever
+      ->shouldReceive('getCurrentVersion')->once()
       ->with($db)
-      ->andReturn(null)
-      ->getMock();
+      ->andReturn(null);
+    $dbVerRetriever
+      ->shouldReceive('setCurrentVersion')->once()
+      ->with($db, 1);
 
     // Set object under test and its mocked dependencies
     // -------------------------------------------------------------------------
@@ -92,7 +95,7 @@ class DatabaseUpdaterTest extends TestCase {
     $dbup->setPreAlterExecutor($preAlterExecutor);
     $dbup->setAlterExecutor($alterExecutor);
     $dbup->setPostAlterExecutor($postAlterExecutor);
-    $dbup->setDatabaseVersionRetrievalScheme($dbVerRetriever);
+    $dbup->setDatabaseVersionManager($dbVerRetriever);
 
     // Run the update to exercise the object
     // -------------------------------------------------------------------------
@@ -145,8 +148,8 @@ class DatabaseUpdaterTest extends TestCase {
       ->never()
       ->getMock();
 
-    $dbVerRetriever = M::mock('zpt\dbup\DatabaseVersionRetrievalScheme')
-      ->shouldReceive('getVersion')->once()
+    $dbVerRetriever = M::mock('zpt\dbup\DatabaseVersionManager')
+      ->shouldReceive('getCurrentVersion')->once()
       ->with($db)
       ->andReturn(null)
       ->getMock();
@@ -158,7 +161,7 @@ class DatabaseUpdaterTest extends TestCase {
     $dbup->setPreAlterExecutor($preAlterExecutor);
     $dbup->setAlterExecutor($alterExecutor);
     $dbup->setPostAlterExecutor($postAlterExecutor);
-    $dbup->setDatabaseVersionRetrievalScheme($dbVerRetriever);
+    $dbup->setDatabaseVersionManager($dbVerRetriever);
 
     // Run the update to exercise the object
     // -------------------------------------------------------------------------

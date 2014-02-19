@@ -23,8 +23,8 @@ use \zpt\db\DatabaseConnection;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class DefaultDatabaseVersionRetrievalScheme
-	implements DatabaseVersionRetrievalScheme, LoggerAwareInterface
+class DefaultDatabaseVersionManager
+	implements DatabaseVersionManager, LoggerAwareInterface
 {
 	use LoggerAwareTrait;
 
@@ -39,7 +39,7 @@ class DefaultDatabaseVersionRetrievalScheme
 	 * Retrieves the maximum value from the column `version` in a table named
 	 * `alters`. The name of the column and table can be injected.
 	 */
-	public function getVersion(DatabaseConnection $db) {
+	public function getCurrentVersion(DatabaseConnection $db) {
 		$stmt = $db->prepare("SELECT MAX($this->column) FROM $this->table");
 		$stmt->execute();
 
@@ -49,6 +49,15 @@ class DefaultDatabaseVersionRetrievalScheme
 		}
 
 		return $version;
+	}
+
+	/**
+	 * Inserts a row into the database version table with the given version.
+	 */
+	public function setCurrentVersion(DatabaseConnection $db, $version) {
+		$stmt = $db->prepare("INSERT INTO $this->table ($this->column)
+			VALUES (:version)");
+		$stmt->execute([ 'version' => $version ]);
 	}
 
 	public function setColumn($column) {
