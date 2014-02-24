@@ -12,9 +12,9 @@
  *
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
-namespace zpt\dbup\test;
+namespace zpt\dbup\test\unit;
 
-require_once __DIR__ . '/setup.php';
+require_once __DIR__ . '/../setup.php';
 
 use zpt\dbup\script\SqlScriptParser;
 use PHPUnit_Framework_TestCase as TestCase;
@@ -127,7 +127,7 @@ class SqlScriptParserTest extends TestCase
 	public function testParseInsertWIthIdVariableAssignment() {
 		$parser = new SqlScriptParser();
 
-		$scriptSrc = file_get_contents(__DIR__ . '/scripts/test2-insertid.sql');
+		$scriptSrc = file_get_contents(__DIR__ . '/../scripts/test2-insertid.sql');
 		$script = $parser->parse($scriptSrc);
 
 		$this->assertCount(2, $script);

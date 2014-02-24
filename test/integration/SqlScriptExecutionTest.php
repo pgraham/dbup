@@ -12,9 +12,9 @@
  *
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
-namespace zpt\dbup\test;
+namespace zpt\dbup\test\integration;
 
-require_once __DIR__ . '/setup.php';
+require_once __DIR__ . '/../setup.php';
 
 use PHPUnit_Framework_TestCase as TestCase;
 use zpt\dbup\script\SqlScriptExecutor;
@@ -35,7 +35,7 @@ class SqlScriptExecutionTest extends TestCase
 	public function testBasicScriptExecution() {
 		$executor = new SqlScriptExecutor($this->db);
 
-		$executor->execute(__DIR__ . '/scripts/test1.sql');
+		$executor->execute(__DIR__ . '/../scripts/test1.sql');
 
 		$result = $this->db->query('SELECT * FROM config');
 		$this->assertInstanceOf('zpt\db\QueryResult', $result);
@@ -43,7 +43,7 @@ class SqlScriptExecutionTest extends TestCase
 
 	public function testInsertIdVariable() {
 		$executor = new SqlScriptExecutor($this->db);
-		$values = $executor->execute(__DIR__ . '/scripts/test2-insertid.sql');
+		$values = $executor->execute(__DIR__ . '/../scripts/test2-insertid.sql');
 
 		$insertId = $values->insertId;
 		$this->assertNotNull($insertId);
@@ -63,7 +63,7 @@ class SqlScriptExecutionTest extends TestCase
 
 	public function testUseInsertId() {
 		$executor = new SqlScriptExecutor($this->db);
-		$values = $executor->execute(__DIR__ . '/scripts/test3-reuse-insertid.sql');
+		$values = $executor->execute(__DIR__ . '/../scripts/test3-reuse-insertid.sql');
 
 		$insertId = $values->insertId;
 		$this->assertNotNull($insertId);

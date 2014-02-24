@@ -12,9 +12,9 @@
  *
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
-namespace zpt\dbup\test;
+namespace zpt\dbup\test\unit;
 
-require_once __DIR__ . '/setup.php';
+require_once __DIR__ . '/../setup.php';
 
 use zpt\dbup\script\SqlScriptStatementFactory;
 use PHPUnit_Framework_TestCase as TestCase;
