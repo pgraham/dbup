@@ -14,9 +14,9 @@
  */
 namespace zpt\dbup;
 
-use \Psr\Log\LoggerAwareInterface;
-use \Psr\Log\LoggerAwareTrait;
-use \DirectoryIterator;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use DirectoryIterator;
 
 /**
  * This class parses database versions from the a file system path.
@@ -30,15 +30,6 @@ class FsVersionParser implements VersionParser, LoggerAwareInterface {
   const PRE_ALTER_REGEX = '/^pre-alter-0*([1-9][0-9]*)\.php$/';
   const POST_ALTER_REGEX = '/^post-alter-0*([1-9][0-9]*)\.php$/';
 
-  private $_pathIteratorFactory;
-
-  public function __construct(PathIteratorFactory $pathIteratorFactory = null) {
-    if ($pathIteratorFactory === null) {
-      $pathIteratorFactory = new SplPathIteratorFactory();
-    }
-    $this->_pathIteratorFactory = $pathIteratorFactory;
-  }
-
   public function parseBase($path) {
     $baseScript = "$path/base.sql";
     if (file_exists($baseScript)) {
@@ -48,10 +39,10 @@ class FsVersionParser implements VersionParser, LoggerAwareInterface {
   }
 
   public function parseVersions($path) {
-    $iter = $this->_pathIteratorFactory->create($path);
+    $iter = new DirectoryIterator($path);
 
     $versions = new VersionList();
-    foreach ($iter as $idx => $file) {
+    foreach ($iter as $file) {
       $version = null;
       $type = null;
 
@@ -73,9 +64,5 @@ class FsVersionParser implements VersionParser, LoggerAwareInterface {
     }
 
     return $versions;
-  }
-
-  public function setPathIteratorFactory($pathIteratorFactory) {
-    $this->_pathIteratorFactory = $pathIteratorFactory;
   }
 }
