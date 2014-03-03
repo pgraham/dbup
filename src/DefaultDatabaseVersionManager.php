@@ -14,9 +14,10 @@
  */
 namespace zpt\dbup;
 
-use \Psr\Log\LoggerAwareInterface;
-use \Psr\Log\LoggerAwareTrait;
-use \zpt\db\DatabaseConnection;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use zpt\db\exception\DatabaseException;
+use zpt\db\DatabaseConnection;
 
 /**
  * Default DatabaseVersionRetrievalScheme implementation.
@@ -33,6 +34,7 @@ class DefaultDatabaseVersionManager
 
 	public function __construct() {
 		$this->column = 'version';
+		$this->table = 'alters';
 	}
 
 	/**
@@ -40,24 +42,44 @@ class DefaultDatabaseVersionManager
 	 * `alters`. The name of the column and table can be injected.
 	 */
 	public function getCurrentVersion(DatabaseConnection $db) {
-		$stmt = $db->prepare("SELECT MAX($this->column) FROM $this->table");
-		$stmt->execute();
 
-		$version = $stmt->fetchColumn();
-		if ($version === false) {
-			$version = null;
+		try {
+
+			$sql = "SELECT MAX($this->column) FROM $this->table";
+			$stmt = $db->prepare($sql);
+			$r = $stmt->execute();
+
+			$version = $r->fetchColumn();
+			if ($version === false) {
+				$version = null;
+			}
+			return $version;
+
+		} catch (DatabaseException $e) {
+			if ($e->tableDoesNotExist()) {
+				return null;
+			} else {
+				throw $e;
+			}
 		}
 
-		return $version;
 	}
 
 	/**
 	 * Inserts a row into the database version table with the given version.
 	 */
 	public function setCurrentVersion(DatabaseConnection $db, $version) {
-		$stmt = $db->prepare("INSERT INTO $this->table ($this->column)
-			VALUES (:version)");
-		$stmt->execute([ 'version' => $version ]);
+		try {
+			$this->executeSetCurrentVersion($db, $version);
+		} catch (DatabaseException $e) {
+			if ($e->tableDoesNotExist()) {
+				// Attempt to create the table then re-issue the set version query
+				$this->createAltersTable($db);
+				$this->executeSetCurrentVersion($db, $version);
+			} else {
+				throw $e;
+			}
+		}
 	}
 
 	public function setColumn($column) {
@@ -66,6 +88,21 @@ class DefaultDatabaseVersionManager
 
 	public function setTable($table) {
 		$this->table = $table;
+	}
+
+	private function createAltersTable($db) {
+		$escapedTable = $db->getQueryAdapter()->escapeField($this->table);
+		$escapedColumn = $db->getQueryAdapter()->escapeField($this->column);
+
+		$db->exec("CREATE TABLE $escapedTable (
+			$escapedColumn integer NOT NULL
+		)");
+	}
+
+	private function executeSetCurrentVersion($db, $version) {
+		$stmt = $db->prepare("INSERT INTO $this->table ($this->column)
+			VALUES (:version)");
+		$stmt->execute([ 'version' => $version ]);
 	}
 
 }
