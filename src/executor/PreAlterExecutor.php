@@ -14,7 +14,7 @@
  */
 namespace zpt\dbup\executor;
 
-use \zpt\db\DatabaseConnection;
+use zpt\db\DatabaseConnection;
 
 /**
  * Interface for classes with execute pre-alter initizalization PHP scripts.
@@ -32,6 +32,6 @@ interface PreAlterExecutor {
    * @param Initially empty StdClass instance that can be populated with any
    *   data that should be passed to an associated post-alter script.
    */
-  public function executePreAlter($db, $path, $data);
+  public function executePreAlter(DatabaseConnection $db, $path, $data);
 
 }

@@ -14,7 +14,7 @@
  */
 namespace zpt\dbup\executor;
 
-use \zpt\db\DatabaseConnection;
+use zpt\db\DatabaseConnection;
 
 /**
  * Interface for classes with execute database alter SQL files.

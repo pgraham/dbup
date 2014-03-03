@@ -14,8 +14,9 @@
  */
 namespace zpt\dbup\executor;
 
-use \Psr\Log\LoggerAwareInterface;
-use \Psr\Log\LoggerAwareTrait;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use zpt\db\DatabaseConnection;
 
 /**
  * This class implements both the PreAlterExecutor and PostAlterExecutor
@@ -42,7 +43,7 @@ class PhpIncludeExecutor
 	 * The pre alter script can also return an array or object which will have
 	 * it's keys/properties added to the data object.
 	 */
-	public function executePreAlter($path, $db, $data) {
+	public function executePreAlter(DatabaseConnection $db, $path, $data) {
 		if (!file_exists($path)) {
 			if ($this->logger !== null) {
 				$msg = "Cannot execute pre-alter, file does not exist: $path";
@@ -72,7 +73,7 @@ class PhpIncludeExecutor
 	 *     $GLOBALS['DBUP_CONN'];
 	 *     $GLOBALS['DBUP_DATA'];
 	 */
-	public function executePostAlter($path, $db, $data) {
+	public function executePostAlter(DatabaseConnection $db, $path, $data) {
 		if (!file_exists($path)) {
 			// TODO If available, use a PSR-3 logger to output a warning
 			return;

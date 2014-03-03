@@ -16,12 +16,12 @@ namespace zpt\dbup\test\unit;
 
 require_once __DIR__ . '/../setup.php';
 
-use \PHPUnit_Framework_TestCase as TestCase;
-use \zpt\dbup\DatabaseUpdateException;
-use \zpt\dbup\DatabaseUpdater;
-use \zpt\util\PdoExt;
-use \Exception;
-use \Mockery as M;
+use PHPUnit_Framework_TestCase as TestCase;
+use Mockery as M;
+
+use zpt\dbup\exception\DatabaseUpdateException;
+use zpt\dbup\DatabaseUpdater;
+use Exception;
 
 /**
  * This class tests the DatabaseUpdater class.
@@ -133,18 +133,18 @@ class DatabaseUpdaterTest extends TestCase {
       ->andReturn(null);
 
     $preAlterExecutor = M::mock('zpt\dbup\executor\PreAlterExecutor')
-      ->shouldReceive('execute')
-      ->with($versions[1]['pre'], $db, anInstanceOf('stdClass'))
+      ->shouldReceive('executePreAlter')
+      ->with($db, $versions[1]['pre'], anInstanceOf('stdClass'))
       ->andThrow(new Exception())
       ->getMock();
 
     $alterExecutor = M::mock('zpt\dbup\executor\AlterExecutor')
-      ->shouldReceive('execute')
+      ->shouldReceive('executeAlter')
       ->never()
       ->getMock();
 
     $postAlterExecutor = M::mock('zpt\dbup\executor\PostAlterExecutor')
-      ->shouldReceive('execute')
+      ->shouldReceive('executePostAlter')
       ->never()
       ->getMock();
 
@@ -153,6 +153,8 @@ class DatabaseUpdaterTest extends TestCase {
       ->with($db)
       ->andReturn(null)
       ->getMock();
+
+    $dbVerRetriever->shouldReceive('setCurrentVersion')->never();
 
     // Set object under test and its mocked dependencies
     // -------------------------------------------------------------------------

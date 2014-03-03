@@ -14,12 +14,11 @@
  */
 namespace zpt\dbup\executor;
 
-use \Psr\Log\LoggerAwareInterface;
-use \Psr\Log\LoggerAwareTrait;
-use \zpt\db\exception\DatabaseException;
-use \zpt\db\DatabaseConnection;
-use \zpt\dbup\script\SqlScript;
-use \zpt\dbup\script\SqlScriptStatementFactory;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use zpt\db\exception\DatabaseException;
+use zpt\db\DatabaseConnection;
+use zpt\dbup\script\SqlScriptExecutor;
 
 /**
  * This class implements the AlterExecutor interface by breaking the script into
@@ -27,16 +26,10 @@ use \zpt\dbup\script\SqlScriptStatementFactory;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class BatchSqlExecutor implements AlterExecutor, LoggerAwareInterface {
+class BatchSqlExecutor implements AlterExecutor, LoggerAwareInterface
+{
+
 	use LoggerAwareTrait;
-
-	private $sqlStatementParser;
-	private $sqlScriptStatementFactory;
-
-	public function __construct() {
-		$this->sqlStatementParser = new SqlStatementParser();
-		$this->sqlScriptStatementFactory = new SqlScriptStatementFactory();
-	}
 
 	/**
 	 * Execute the SQL statements found in the script against the provided
@@ -49,13 +42,7 @@ class BatchSqlExecutor implements AlterExecutor, LoggerAwareInterface {
 			return;
 		}
 
-		$stmts = $this->sqlStatementParser->parse(file_get_contents($path));
-		$scriptStmts = [];
-		foreach ($stmts as $stmt) {
-			$scriptStmts[] = $this->sqlScriptStatementFactory->create($stmt);
-		}
-
-		$sqlScript = new SqlScript($scriptStmts);
-		$sqlScript->execute($db);
+		$executor = new SqlScriptExecutor($db);
+		$executor->execute($path);
 	}
 }
