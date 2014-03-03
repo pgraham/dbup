@@ -14,17 +14,21 @@
  */
 namespace zpt\dbup;
 
-use \Psr\Log\LoggerAwareInterface;
-use \Psr\Log\LoggerAwareTrait;
-use \Psr\Log\NullLogger;
-use \zpt\db\DatabaseConnection;
-use \zpt\dbup\executor\AlterExecutor;
-use \zpt\dbup\executor\BatchSqlExecutor;
-use \zpt\dbup\executor\PhpIncludeExector;
-use \zpt\dbup\executor\PostAlterExecutor;
-use \zpt\dbup\executor\PreAlterExecutor;
-use \Exception;
-use \StdClass;
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
+use Psr\Log\NullLogger;
+use zpt\db\DatabaseConnection;
+use zpt\db\exception\DatabaseException;
+use zpt\dbup\exception\DatabaseUpdateFinalizationException;
+use zpt\dbup\exception\DatabaseUpdateInitializationException;
+use zpt\dbup\exception\DatabaseUpdateExecutionException;
+use zpt\dbup\executor\AlterExecutor;
+use zpt\dbup\executor\BatchSqlExecutor;
+use zpt\dbup\executor\PhpIncludeExecutor;
+use zpt\dbup\executor\PostAlterExecutor;
+use zpt\dbup\executor\PreAlterExecutor;
+use Exception;
+use StdClass;
 
 /**
  * This class applies a series of updates to a database.
@@ -53,10 +57,15 @@ class DatabaseUpdater implements LoggerAwareInterface
 
 		$versions = $this->versionParser->parseVersions($alterDir);
 
-		$curVersion = $this->dbVerManager->getCurrentVersion($db);
-		$this->logger->info('Current database version is {dbVersion}', [
-			'dbVersion' => $curVersion === null ? 'unintialized' : $curVersion
-		]);
+		try {
+			$curVersion = $this->dbVerManager->getCurrentVersion($db);
+			$this->logger->info('Current database version is {dbVersion}', [
+				'dbVersion' => $curVersion === null ? 'unintialized' : $curVersion
+			]);
+		} catch (DatabaseException $e) {
+			throw new DatabaseUpdateInitializationException(
+				"Error retrieving current database version:", $e);
+		}
 
 		// If this is an uninitialized database apply the base schema if it exists.
 		if ($curVersion === null) {
@@ -83,7 +92,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 						);
 					} catch (Exception $e) {
 						$db->rollback();
-						throw new DatabaseUpdateException($version, 'pre', $e);
+						throw new DatabaseUpdateExecutionException($version, 'pre', $e);
 					}
 				}
 
@@ -96,7 +105,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 						);
 					} catch (Exception $e) {
 						$db->rollback();
-						throw new DatabaseUpdateException($version, 'alter', $e);
+						throw new DatabaseUpdateExecutionException($version, 'alter', $e);
 					}
 				}
 
@@ -110,11 +119,16 @@ class DatabaseUpdater implements LoggerAwareInterface
 						);
 					} catch (Exception $e) {
 						$db->rollback();
-						throw new DatabaseUpdateException($version, 'post', $e);
+						throw new DatabaseUpdateExecutionException($version, 'post', $e);
 					}
 				}
 
-				$this->dbVerManager->setCurrentVersion($db, $version);
+				try {
+					$this->dbVerManager->setCurrentVersion($db, $version);
+				} catch (DatabaseException $e) {
+					throw new DatabaseUpdateFinalizationException(
+						"Error setting new database version", $e);
+				}
 			}
 		}
 

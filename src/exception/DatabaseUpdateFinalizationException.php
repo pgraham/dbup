@@ -1,7 +1,7 @@
 <?php
 /**
  * =============================================================================
- * Copyright (c) 2012, Philip Graham
+ * Copyright (c) 2014, Philip Graham
  * All rights reserved.
  *
  * This file is part of dbUp and is licensed by the Copyright holder under the
@@ -12,33 +12,20 @@
  *
  * @license http://www.opensource.org/licenses/bsd-license.php
  */
-namespace zpt\dbup;
+namespace zpt\dbup\exception;
 
-use \Exception;
+use Exception;
 
 /**
- * Exception class for errors that occur while apply database updates.
+ * Exception class for exceptions that occur while preparing to apply a series
+ * of updates. This includes version parsing and current version retrieval.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class DatabaseUpdateException extends Exception {
+class DatabaseUpdateFinalizationException extends DatabaseUpdateException
+{
 
-	private $version;
-	private $phase;
-
-	public function __construct($version, $phase, $cause = null) {
-		$this->version = $version;
-		$this->phase = $phase;
-
-		$msg = "Database updating failed on version $version in the $phase phase.";
+	public function __construct($msg, Exception $cause) {
 		parent::__construct($msg, 0, $cause);
-	}
-
-	public function getVersion() {
-		return $this->version;
-	}
-
-	public function getPhase() {
-		return $this->phase;
 	}
 }
