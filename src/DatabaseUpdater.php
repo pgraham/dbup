@@ -46,36 +46,35 @@ class DatabaseUpdater implements LoggerAwareInterface
 	private $postAlterExecutor;
 	private $dbVerManager;
 
+	public function initialize(DatabaseConnection $db, $alterDir) {
+		$this->ensureDependencies();
+		$this->logger->info("[DBUP] Initializing for alters in $alterDir");
+
+		$curVersion = $this->getCurrentVersion($db);
+
+		if ($curVersion === null) {
+			$db->beginTransaction();
+			$this->doInitialize($db, $alterDir);
+			$this->setCurrentVersion($db, 0);
+			$db->commit();
+		}
+	}
+
 	public function update(DatabaseConnection $db, $alterDir) {
 		$this->ensureDependencies();
 
-		$this->logger->info('Updating database with alters in directory {dir}', [
-			'dir' => $alterDir
-		]);
+		$this->logger->info("Updating database with alters in $alterDir");
 
 		$db->beginTransaction();
 
-		$versions = $this->versionParser->parseVersions($alterDir);
-
-		try {
-			$curVersion = $this->dbVerManager->getCurrentVersion($db);
-			$this->logger->info('Current database version is {dbVersion}', [
-				'dbVersion' => $curVersion === null ? 'unintialized' : $curVersion
-			]);
-		} catch (DatabaseException $e) {
-			throw new DatabaseUpdateInitializationException(
-				"Error retrieving current database version:", $e);
-		}
+		$curVersion = $this->getCurrentVersion($db);
 
 		// If this is an uninitialized database apply the base schema if it exists.
 		if ($curVersion === null) {
-			$base = $this->versionParser->parseBase($alterDir);
-			if ($base !== null) {
-				$this->logger->info('Applying base schema');
-				$this->alterExecutor->executeAlter($db, $base);
-			}
+			$this->doInitialize($db, $alterDir);
 		}
 
+		$versions = $this->versionParser->parseVersions($alterDir);
 		foreach ($versions as $version => $scripts) {
 
 			$data = new StdClass();
@@ -123,12 +122,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 					}
 				}
 
-				try {
-					$this->dbVerManager->setCurrentVersion($db, $version);
-				} catch (DatabaseException $e) {
-					throw new DatabaseUpdateFinalizationException(
-						"Error setting new database version", $e);
-				}
+				$this->setCurrentVersion($db, $version);
 			}
 		}
 
@@ -187,6 +181,14 @@ class DatabaseUpdater implements LoggerAwareInterface
 		$this->versionParser = $versionParser;
 	}
 
+	protected function doInitialize($db, $alterDir) {
+		$base = $this->versionParser->parseBase($alterDir);
+		if ($base !== null) {
+			$this->logger->info('Applying base schema');
+			$this->alterExecutor->executeAlter($db, $base);
+		}
+	}
+
 	private function ensureDependencies() {
 
 		if ($this->logger === null) {
@@ -222,4 +224,26 @@ class DatabaseUpdater implements LoggerAwareInterface
 		}
 	}
 
+	private function getCurrentVersion($db) {
+		try {
+			$curVersion = $this->dbVerManager->getCurrentVersion($db);
+
+			$curVersionMsg = $curVersion === null ? 'uninitialized' : $curVersion;
+			$this->logger->debug("[DBUP] Current db version: $curVersionMsg");
+
+			return $curVersion;
+		} catch (DatabaseException $e) {
+			throw new DatabaseUpdateInitializationException(
+				"Error retrieving current database version: {$e->getMessage()}", $e);
+		}
+	}
+
+	private function setCurrentVersion($db, $version) {
+		try {
+			$this->dbVerManager->setCurrentVersion($db, $version);
+		} catch (DatabaseException $e) {
+			throw new DatabaseUpdateFinalizationException(
+				"Error setting new database version", $e);
+		}
+	}
 }
