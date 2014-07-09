@@ -36,9 +36,11 @@ class SqlScriptParser
 		$curStmt = [];
 
 		foreach ($lines as $idx => $line) {
-			if (trim($line) === '') {
+			$line = String($line);
+			if ($line->isEmpty() || $line->startsWith('--')) {
 				continue;
 			}
+
 			$curStmt[] = $line;
 
 			if (preg_match('/;$/', $line)) {
