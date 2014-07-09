@@ -39,9 +39,12 @@ class FsVersionParser implements VersionParser, LoggerAwareInterface {
   }
 
   public function parseVersions($path) {
-    $iter = new DirectoryIterator($path);
-
     $versions = new VersionList();
+    if (!file_exists($path)) {
+      return $versions;
+    }
+
+    $iter = new DirectoryIterator($path);
     foreach ($iter as $file) {
       $version = null;
       $type = null;
