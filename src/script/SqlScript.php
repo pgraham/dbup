@@ -33,9 +33,9 @@ class SqlScript implements Countable, Iterator
 
 	/**
 	 * Create a new SqlScript containing the given list of
-	 * {@link SqlScriptStatement}s.
+	 * {@link SqlStatement} objects.
 	 *
-	 * @param SqlScriptStatement[] $stmts
+	 * @param SqlStatement[] $stmts
 	 */
 	public function __construct(array $stmts = []) {
 		$this->stmts = $stmts;
@@ -47,7 +47,7 @@ class SqlScript implements Countable, Iterator
 			$stmt->execute($db, $state);
 		}
 
-		// Return final state of SQL script so that variable values can be used in 
+		// Return final state of SQL script so that variable values can be used in
 		// subsequent processing without requiring an addition query.
 		return $state;
 	}

@@ -21,7 +21,7 @@ use zpt\db\DatabaseConnection;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-interface SqlScriptStatement
+interface SqlStatement
 {
 
 	/**

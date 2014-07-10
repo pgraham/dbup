@@ -15,13 +15,13 @@
 namespace zpt\dbup\script;
 
 /**
- * SqlScriptStatment for CREATE TABLE statements. These statements will 
- * translate serial field types into the appropriate syntax for the database 
+ * {@link SqlStatment} for CREATE TABLE statements. These statements will
+ * translate serial field types into the appropriate syntax for the database
  * against which the statement is being executed.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class CreateTableStatement implements SqlScriptStatement
+class CreateTableStatement implements SqlStatement
 {
 
 	private $stmt;

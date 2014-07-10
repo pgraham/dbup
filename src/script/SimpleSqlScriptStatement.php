@@ -23,7 +23,7 @@ use zpt\db\DatabaseConnection;
  * @author Philip Graham <philip@zeptech.ca>
  */
 class SimpleSqlScriptStatement extends BaseSqlScriptStatement
-	implements SqlScriptStatement
+	implements SqlStatement
 {
 
 	public function execute(DatabaseConnection $db, SqlScriptState $state) {

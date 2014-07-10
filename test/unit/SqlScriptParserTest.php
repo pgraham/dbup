@@ -32,7 +32,7 @@ class SqlScriptParserTest extends TestCase
 		$this->assertCount(1, $script);
 
 		foreach ($script as $idx => $stmt) {
-			$this->assertInstanceOf('zpt\dbup\script\SqlScriptStatement', $stmt);
+			$this->assertInstanceOf('zpt\dbup\script\SqlStatement', $stmt);
 
 			if ($idx === 0) {
 				$this->assertEquals($scriptSrc, $stmt->getSource());
@@ -54,7 +54,7 @@ class SqlScriptParserTest extends TestCase
 		$this->assertCount(2, $script);
 
 		foreach ($script as $idx => $stmt) {
-			$this->assertInstanceOf('zpt\dbup\script\SqlScriptStatement', $stmt);
+			$this->assertInstanceOf('zpt\dbup\script\SqlStatement', $stmt);
 
 			if ($idx > 1) {
 				$this->fail("Unexpected index $idx");
@@ -114,7 +114,7 @@ class SqlScriptParserTest extends TestCase
 		$this->assertCount(2, $script);
 
 		foreach ($script as $idx => $stmt) {
-			$this->assertInstanceOf('zpt\dbup\script\SqlScriptStatement', $stmt);
+			$this->assertInstanceOf('zpt\dbup\script\SqlStatement', $stmt);
 
 			if ($idx > 1) {
 				$this->fail("Unexpected index $idx");
@@ -133,13 +133,10 @@ class SqlScriptParserTest extends TestCase
 		$this->assertCount(2, $script);
 
 		foreach ($script as $idx => $stmt) {
-			$this->assertInstanceOf('zpt\dbup\script\SqlScriptStatement', $stmt);
+			$this->assertInstanceOf('zpt\dbup\script\SqlStatement', $stmt);
 
 			if ($idx === 1) {
-				$this->assertInstanceOf(
-					'zpt\dbup\script\InsertSqlScriptStatement',
-					$stmt
-				);
+				$this->assertInstanceOf('zpt\dbup\script\InsertSqlStatement', $stmt);
 			}
 		}
 	}
