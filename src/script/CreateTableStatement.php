@@ -29,7 +29,19 @@ class CreateTableStatement extends BaseSqlStatement implements SqlStatement
 	}
 
 	public function getSql($dbDriver) {
-		return $this->stmt;
+		switch ($dbDriver) {
+			case 'pgsql':
+			$sql = preg_replace(
+				'/integer (NOT NULL )?AUTO_INCREMENT/i',
+				'SERIAL $1',
+				$this->stmt
+			);
+			break;
+
+			default:
+			$sql = $this->stmt;
+		}
+		return $sql;
 	}
 
 }

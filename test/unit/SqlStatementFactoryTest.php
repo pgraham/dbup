@@ -51,4 +51,14 @@ class SqlStatementFactoryTest extends TestCase
 		$this->assertEquals($stmtSql, $stmt->getSql('sqlite'));
 	}
 
+	public function testCreateTable() {
+		$factory = new SqlStatementFactory();
+
+		$stmtSrc = "CREATE TABLE t ( id INTEGER NOT NULL );";
+		$stmt = $factory->createFor($stmtSrc);
+
+		$this->assertInstanceOf('zpt\dbup\script\CreateTableStatement', $stmt);
+		$this->assertEquals($stmtSrc, $stmt->getSource());
+	}
+
 }

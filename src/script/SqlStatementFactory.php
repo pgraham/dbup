@@ -30,9 +30,13 @@ class SqlStatementFactory {
 	 * @param string $stmt
 	 */
 	public function createFor($stmt) {
+		$stmt = String($stmt);
 		if (preg_match('/^\S+\s*:=\s*INSERT\s+/', $stmt)) {
 			return new InsertStatement($stmt);
+		} else if ($stmt->startsWith('CREATE TABLE')) {
+			return new CreateTableStatement($stmt);
+		} else {
+			return new SimpleSqlStatement($stmt);
 		}
-		return new SimpleSqlStatement($stmt);
 	}
 }
