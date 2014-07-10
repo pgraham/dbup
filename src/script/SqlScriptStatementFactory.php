@@ -33,6 +33,6 @@ class SqlScriptStatementFactory {
 		if (preg_match('/^\S+\s*:=\s*INSERT\s+/', $stmt)) {
 			return new InsertStatement($stmt);
 		}
-		return new SimpleSqlScriptStatement($stmt);
+		return new SimpleSqlStatement($stmt);
 	}
 }

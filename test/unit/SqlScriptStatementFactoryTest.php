@@ -33,7 +33,7 @@ class SqlScriptStatementFactoryTest extends TestCase
 		$stmtSrc = "SELECT * FROM config;";
 		$stmt = $factory->createFor($stmtSrc);
 
-		$this->assertInstanceOf('zpt\dbup\script\SimpleSqlScriptStatement', $stmt);
+		$this->assertInstanceOf('zpt\dbup\script\SimpleSqlStatement', $stmt);
 		$this->assertEquals($stmtSrc, $stmt->getSource());
 		$this->assertEquals($stmtSrc, $stmt->getSql());
 	}
