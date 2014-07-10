@@ -44,7 +44,7 @@ class SqlScriptStatementFactoryTest extends TestCase
 		$stmtSrc = "insertId := INSERT INTO config (name) VALUES ('aName');";
 		$stmt = $factory->createFor($stmtSrc);
 
-		$this->assertInstanceOf('zpt\dbup\script\InsertSqlScriptStatement', $stmt);
+		$this->assertInstanceOf('zpt\dbup\script\InsertStatement', $stmt);
 		$this->assertEquals($stmtSrc, $stmt->getSource());
 
 		$stmtSql = "INSERT INTO config (name) VALUES ('aName');";

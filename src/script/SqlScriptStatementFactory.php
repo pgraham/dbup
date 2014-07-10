@@ -31,7 +31,7 @@ class SqlScriptStatementFactory {
 	 */
 	public function createFor($stmt) {
 		if (preg_match('/^\S+\s*:=\s*INSERT\s+/', $stmt)) {
-			return new InsertSqlScriptStatement($stmt);
+			return new InsertStatement($stmt);
 		}
 		return new SimpleSqlScriptStatement($stmt);
 	}

@@ -19,14 +19,14 @@ require_once __DIR__ . '/../setup.php';
 use PHPUnit_Framework_TestCase as TestCase;
 use Mockery as M;
 
-use zpt\dbup\script\InsertSqlScriptStatement;
+use zpt\dbup\script\InsertStatement;
 
 /**
- * This class tests the InsertSqlScriptStatement class.
+ * This class tests the InsertStatement class.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class InsertSqlScriptStatementTest extends TestCase
+class InsertStatementTest extends TestCase
 {
 
 	protected function tearDown() {
@@ -35,7 +35,7 @@ class InsertSqlScriptStatementTest extends TestCase
 
 	public function testConstruction() {
 		$stmtSrc = "insertId := INSERT INTO my_table (name) VALUES ('aName');";
-		$stmt = new InsertSqlScriptStatement($stmtSrc);
+		$stmt = new InsertStatement($stmtSrc);
 
 		$this->assertEquals($stmtSrc, $stmt->getSource());
 		$this->assertEquals(
@@ -46,7 +46,7 @@ class InsertSqlScriptStatementTest extends TestCase
 
 	public function testExecution() {
 		$stmtSrc = "insertId := INSERT INTO my_table (name) VALUES ('aName');";
-		$stmt = new InsertSqlScriptStatement($stmtSrc);
+		$stmt = new InsertStatement($stmtSrc);
 
 		$queryResult = M::mock('zpt\db\QueryResult');
 		$queryResult

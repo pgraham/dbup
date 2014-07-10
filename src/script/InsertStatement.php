@@ -23,8 +23,7 @@ use InvalidArgumentException;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class InsertSqlScriptStatement extends BaseSqlStatement
-	implements SqlStatement
+class InsertStatement extends BaseSqlStatement implements SqlStatement
 {
 
 	private $varName;
