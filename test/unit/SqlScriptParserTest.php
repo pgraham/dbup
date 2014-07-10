@@ -65,7 +65,18 @@ class SqlScriptParserTest extends TestCase
 	}
 
 	public function testParseScriptWithComment() {
-		$this->markTestIncomplete("Ensure that comments are ommitted");
+		$parser = new SqlScriptParser();
+
+		$scriptSrc = [
+			'-- This is a comment',
+			"INSERT INFO config VALUES ('akey', 'a value')"
+		];
+		$script = $parser->parse(implode("\n", $scriptSrc));
+		$this->assertCount(1, $script);
+
+		foreach ($script as $idx => $stmt) {
+			$this->assertEquals($scriptSrc[1], $stmt->getSource());
+		}
 	}
 
 	public function testParseScriptWithTrailingComment() {
