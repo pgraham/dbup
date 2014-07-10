@@ -27,6 +27,7 @@ class InsertStatement extends BaseSqlStatement implements SqlStatement
 {
 
 	private $varName;
+	private $sql;
 
 	public function __construct($stmt) {
 		$sqlStart = strpos($stmt, 'INSERT');
@@ -35,18 +36,21 @@ class InsertStatement extends BaseSqlStatement implements SqlStatement
 				"Given statement does not assign an insert id to a variable: $stmt"
 			);
 		}
-		$sql = substr($stmt, $sqlStart);
+		$this->sql = substr($stmt, $sqlStart);
 
 		$assignOpPos = strpos($stmt, ':=');
 		$this->varName = trim(substr($stmt, 0, $assignOpPos));
 
-		parent::__construct($stmt, $sql);
+		parent::__construct($stmt);
 	}
 
 	public function execute(DatabaseConnection $db, SqlScriptState $state) {
-		$stmt = $db->prepare($this->getSql());
-		$result = $stmt->execute($this->buildParams($state));
-
+		$result = parent::execute($db, $state);
 		$state->assignVariable($this->varName, $result->getInsertId());
+		return $result;
+	}
+
+	public function getSql($dbDriver) {
+		return $this->sql;
 	}
 }

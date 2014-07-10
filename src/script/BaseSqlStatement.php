@@ -29,40 +29,45 @@ abstract class BaseSqlStatement
 	protected $sql;
 	protected $params;
 
-	public function __construct($stmt, $sql = null) {
+	/**
+	 * Construct the base functionality of an {@link SqlStatement} implementation.
+	 *
+	 * @param string $stmt
+	 *   The SQL statement source as it appears in the SQL script
+	 * @param string $sql
+	 *   If the statement source contains additional syntax, the base SQL without
+	 *   additional syntax can be provided.
+	 */
+	public function __construct($stmt) {
 		$this->stmt = $stmt;
-
-		if ($sql === null) {
-			$sql = $stmt;
-		}
-		$this->sql = $sql;
-
-		if (preg_match_all('/:(\w+)/', $this->sql, $matches)) {
-			$this->params = $matches[1];
-		}
 	}
 
-	public function buildParams(SqlScriptState $state) {
-		$params = [];
-		if (is_array($this->params)) {
-			foreach ($this->params as $paramName) {
-				$params[$paramName] = $state->$paramName;
-			}
-		}
-		return $params;
-	}
+	public function execute(DatabaseConnection $db, SqlScriptState $state) {
+		$sql = $this->getSql($db->getInfo()->getDriver());
+		$params = $this->parseParams($sql, $state);
 
-	public function doExecute(DatabaseConnection $db, SqlScriptState $state) {
-		$stmt = $db->prepare($this->getSql());
-		$stmt->execute($this->buildParams($state));
+		$stmt = $db->prepare($sql);
+		return $stmt->execute($params);
 	}
 
 	public function getSource() {
 		return $this->stmt;
 	}
 
-	public function getSql() {
-		return $this->sql;
+	public abstract function getSql($dbDriver);
+
+	private function parse($sql, $state) {
+		$paramNames = [];
+		$params = [];
+
+		if (preg_match_all('/:(\w+)/', $sql, $matches)) {
+			$paramNames = $matches[1];
+		}
+
+		foreach ($paramNames as $paramName) {
+			$params[$paramName] = $state->$paramName;
+		}
+		return $params;
 	}
 
 }

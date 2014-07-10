@@ -31,6 +31,8 @@ interface SqlStatement
 	 *   Connection to the database against which the statement should be applied.
 	 * @param SqlScriptState $state
 	 *   The current state of the the SQL script of which the statement is a part.
+	 * @return zpt\db\QueryResult
+	 *   Return the result of executing the statement
 	 */
 	public function execute(DatabaseConnection $db, SqlScriptState $state);
 

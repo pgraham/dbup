@@ -22,12 +22,10 @@ use zpt\db\DatabaseConnection;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class SimpleSqlStatement extends BaseSqlStatement
-	implements SqlStatement
+class SimpleSqlStatement extends BaseSqlStatement implements SqlStatement
 {
 
-	public function execute(DatabaseConnection $db, SqlScriptState $state) {
-		$this->doExecute($db, $state);
+	public function getSql($dbDriver) {
+		return $this->stmt;
 	}
-
 }
