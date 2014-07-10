@@ -32,7 +32,7 @@ class CreateTableStatement extends BaseSqlStatement implements SqlStatement
 		switch ($dbDriver) {
 			case 'pgsql':
 			$sql = preg_replace(
-				'/integer (NOT NULL )?AUTO_INCREMENT/i',
+				'/integer\s+(NOT NULL\s+)?AUTO_INCREMENT/i',
 				'SERIAL $1',
 				$this->stmt
 			);

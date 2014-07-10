@@ -44,4 +44,20 @@ class CreateTableStatementTest extends TestCase
 		$this->assertEquals('CREATE TABLE t ( id SERIAL );', $pgSql);
 	}
 
+	public function testMysqlIntegerAutoIncrementExtraWhitespaceToPostgres() {
+		$stmtSrc = 'CREATE TABLE t ( id    integer   NOT NULL   AUTO_INCREMENT );';
+		$stmt = new CreateTableStatement($stmtSrc);
+
+		$pgSql = $stmt->getSql('pgsql');
+		$pgSql = preg_replace('/\s+/', ' ', $pgSql);
+		$this->assertEquals('CREATE TABLE t ( id SERIAL NOT NULL );', $pgSql);
+
+		$stmtSrc = 'CREATE TABLE t ( id    integer   AUTO_INCREMENT );';
+		$stmt = new CreateTableStatement($stmtSrc);
+
+		$pgSql = $stmt->getSql('pgsql');
+		$pgSql = preg_replace('/\s+/', ' ', $pgSql);
+		$this->assertEquals('CREATE TABLE t ( id SERIAL );', $pgSql);
+	}
+
 }
