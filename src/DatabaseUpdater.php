@@ -234,7 +234,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 			return $curVersion;
 		} catch (DatabaseException $e) {
 			throw new DatabaseUpdateInitializationException(
-				"Error retrieving current database version: {$e->getMessage()}", $e);
+				"Unable to retrieve current database version", $e);
 		}
 	}
 
