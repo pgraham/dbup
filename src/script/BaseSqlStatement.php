@@ -22,7 +22,7 @@ use \zpt\db\DatabaseConnection;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-abstract class BaseSqlScriptStatement
+abstract class BaseSqlStatement
 {
 
 	protected $stmt;

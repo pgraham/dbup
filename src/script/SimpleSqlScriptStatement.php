@@ -22,7 +22,7 @@ use zpt\db\DatabaseConnection;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class SimpleSqlScriptStatement extends BaseSqlScriptStatement
+class SimpleSqlScriptStatement extends BaseSqlStatement
 	implements SqlStatement
 {
 

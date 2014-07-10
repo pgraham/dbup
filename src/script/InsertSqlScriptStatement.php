@@ -23,7 +23,7 @@ use InvalidArgumentException;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class InsertSqlScriptStatement extends BaseSqlScriptStatement
+class InsertSqlScriptStatement extends BaseSqlStatement
 	implements SqlStatement
 {
 

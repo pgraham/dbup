@@ -22,11 +22,11 @@ use Mockery as M;
 use zpt\dbup\script\SqlScriptState;
 
 /**
- * This class tests the abstract {@link BaseSqlScriptStatement} class.
+ * This class tests the abstract {@link BaseSqlStatement} class.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class BaseSqlScriptStatementTest extends TestCase
+class BaseSqlStatementTest extends TestCase
 {
 
 	protected function tearDown() {
@@ -42,7 +42,7 @@ class BaseSqlScriptStatementTest extends TestCase
 			. "VALUES (:linkId, 'linked_value');"
 		];
 
-		$stmt = M::mock('zpt\dbup\script\BaseSqlScriptStatement', $ctorArgs)
+		$stmt = M::mock('zpt\dbup\script\BaseSqlStatement', $ctorArgs)
 			->makePartial();
 
 		$sqlState = new SqlScriptState();
