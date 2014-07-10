@@ -23,6 +23,7 @@
 		"zeptech/utility": "dev-master"
 	},
 	"require-dev": {
+		"phpunit/phpunit": "4.1.*",
 		"mockery/mockery": "dev-master@dev",
 		"hamcrest/hamcrest": "1.1.0"
 	},
