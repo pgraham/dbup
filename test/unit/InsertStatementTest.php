@@ -40,7 +40,7 @@ class InsertStatementTest extends TestCase
 		$this->assertEquals($stmtSrc, $stmt->getSource());
 		$this->assertEquals(
 			"INSERT INTO my_table (name) VALUES ('aName');",
-			$stmt->getSql()
+			$stmt->getSql('sqlite')
 		);
 	}
 
@@ -63,6 +63,14 @@ class InsertStatementTest extends TestCase
 			->shouldReceive('prepare')
 			->with("INSERT INTO my_table (name) VALUES ('aName');")
 			->andReturn($dbPrepStmt);
+
+		$dbInfo = M::mock('zpt\db\DatabaseConnectionInfo');
+		$db
+			->shouldReceive('getInfo')
+			->andReturn($dbInfo);
+		$dbInfo
+			->shouldReceive('getDriver')
+			->andReturn('sqlite');
 
 		$state = M::mock('zpt\dbup\script\SqlScriptState');
 		$state

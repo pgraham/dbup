@@ -35,7 +35,7 @@ class SqlStatementFactoryTest extends TestCase
 
 		$this->assertInstanceOf('zpt\dbup\script\SimpleSqlStatement', $stmt);
 		$this->assertEquals($stmtSrc, $stmt->getSource());
-		$this->assertEquals($stmtSrc, $stmt->getSql());
+		$this->assertEquals($stmtSrc, $stmt->getSql('sqlite'));
 	}
 
 	public function testCreateInsert() {
@@ -48,7 +48,7 @@ class SqlStatementFactoryTest extends TestCase
 		$this->assertEquals($stmtSrc, $stmt->getSource());
 
 		$stmtSql = "INSERT INTO config (name) VALUES ('aName');";
-		$this->assertEquals($stmtSql, $stmt->getSql());
+		$this->assertEquals($stmtSql, $stmt->getSql('sqlite'));
 	}
 
 }

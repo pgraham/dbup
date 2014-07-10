@@ -34,7 +34,6 @@ class SqlScriptExecutionTest extends TestCase
 
 	public function testBasicScriptExecution() {
 		$executor = new SqlScriptExecutor($this->db);
-
 		$executor->execute(__DIR__ . '/../scripts/test1.sql');
 
 		$result = $this->db->query('SELECT * FROM config');

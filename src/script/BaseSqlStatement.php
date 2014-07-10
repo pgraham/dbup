@@ -26,8 +26,6 @@ abstract class BaseSqlStatement
 {
 
 	protected $stmt;
-	protected $sql;
-	protected $params;
 
 	/**
 	 * Construct the base functionality of an {@link SqlStatement} implementation.
@@ -56,7 +54,7 @@ abstract class BaseSqlStatement
 
 	public abstract function getSql($dbDriver);
 
-	private function parse($sql, $state) {
+	private function parseParams($sql, $state) {
 		$paramNames = [];
 		$params = [];
 

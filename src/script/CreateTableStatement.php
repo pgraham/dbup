@@ -24,16 +24,12 @@ namespace zpt\dbup\script;
 class CreateTableStatement extends BaseSqlStatement implements SqlStatement
 {
 
-	private $stmt;
-
 	public function __construct($stmt) {
 		parent::__construct($stmt);
-
-
 	}
 
 	public function getSql($dbDriver) {
-
+		return $this->stmt;
 	}
 
 }

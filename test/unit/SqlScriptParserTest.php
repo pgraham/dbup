@@ -147,7 +147,7 @@ class SqlScriptParserTest extends TestCase
 			$this->assertInstanceOf('zpt\dbup\script\SqlStatement', $stmt);
 
 			if ($idx === 1) {
-				$this->assertInstanceOf('zpt\dbup\script\InsertSqlStatement', $stmt);
+				$this->assertInstanceOf('zpt\dbup\script\InsertStatement', $stmt);
 			}
 		}
 	}

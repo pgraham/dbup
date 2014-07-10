@@ -34,6 +34,7 @@ class BaseSqlStatementTest extends TestCase
 	}
 
 	public function testBuildParams() {
+		$this->markTestIncomplete("Move parameter parsing into it's own unit");
 		$ctorArgs = [
 			"linkId := INSERT INTO my_table_link (my_table_id, link_val)"
 			. "VALUES (:linkId, 'linked_value');",
