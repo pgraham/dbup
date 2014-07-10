@@ -33,9 +33,8 @@ are optional. The files need to named according to the following convention:
 ## SQL Enhancements
 
 The .sql scripts of the alter phase support a superset of SQL syntax. The
-additional syntax make it eaiser to write portable scripts and to make use of
-insert ids so that some data insertion doesn't need to happen in a post-alter
-script.
+additional syntax makes it eaiser to write portable scripts, as well as to
+perform some common tasks that would normally require a pre/post alter script.
 
 
 ### INSERT ID variables
@@ -45,7 +44,7 @@ it is difficult to determine the generated ID for subsequent use. DbUp supports
 special syntax to store these IDs in variables and to use them in subsequent
 INSERT statements. To store the insert ID use the following syntax:
 
-    my_insert_id = INSERT INTO my_table (key, value)
+    my_insert_id := INSERT INTO my_table (key, value)
         VALUES ('aKey', 'aValue');
 
 To then use the saved insert ID in a subsequent statement, reference the
