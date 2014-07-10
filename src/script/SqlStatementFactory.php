@@ -20,7 +20,7 @@ namespace zpt\dbup\script;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class SqlScriptStatementFactory {
+class SqlStatementFactory {
 
 	private static $CREATE_TABLE_RE;
 

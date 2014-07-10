@@ -26,7 +26,7 @@ class SqlScriptParser
 	private $stmtFactory;
 
 	public function __construct() {
-		$this->stmtFactory = new SqlScriptStatementFactory();
+		$this->stmtFactory = new SqlStatementFactory();
 	}
 
 	public function parse($scriptSrc) {

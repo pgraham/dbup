@@ -16,19 +16,19 @@ namespace zpt\dbup\test\unit;
 
 require_once __DIR__ . '/../setup.php';
 
-use zpt\dbup\script\SqlScriptStatementFactory;
+use zpt\dbup\script\SqlStatementFactory;
 use PHPUnit_Framework_TestCase as TestCase;
 
 /**
- * This class tests the SqlScriptStatementFactory class.
+ * This class tests the SqlStatementFactory class.
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class SqlScriptStatementFactoryTest extends TestCase
+class SqlStatementFactoryTest extends TestCase
 {
 
 	public function testCreateSimple() {
-		$factory = new SqlScriptStatementFactory();
+		$factory = new SqlStatementFactory();
 
 		$stmtSrc = "SELECT * FROM config;";
 		$stmt = $factory->createFor($stmtSrc);
@@ -39,7 +39,7 @@ class SqlScriptStatementFactoryTest extends TestCase
 	}
 
 	public function testCreateInsert() {
-		$factory = new SqlScriptStatementFactory();
+		$factory = new SqlStatementFactory();
 
 		$stmtSrc = "insertId := INSERT INTO config (name) VALUES ('aName');";
 		$stmt = $factory->createFor($stmtSrc);
