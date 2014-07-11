@@ -54,10 +54,20 @@ variable using the following syntax:
         VALUES (:my_insert_id, 'refVal');
 
 
-### __WIP__ Normalization of SERIAL fields
+### **WIP** Normalization of SERIAL fields
 
 Most databases support a field type that is an auto incrementing integer most
 commonly used for primary keys, however they all seem to have a slightly
 different syntax. When writing your alter scripts you can write these statements
 for whichever database you are comfortable with and dbUp will handle it
 correctly for whichever database your script is being run against.
+
+This feature is currently a WIP and only supports a limitted number of use cases
+(i.e the ones I've need personally). If you find a various that's not working
+create an issue, it should be fairly easy to add support.
+
+Current support includes:
+
+ -  MySQL `integer [NOT NULL] AUTO_INCREMENT` field can be executed against a
+    PostgreSQL connection. Field can be specified as not null.
+ -  That's it.
