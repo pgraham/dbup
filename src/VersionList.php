@@ -24,14 +24,14 @@ use Iterator;
  */
 class VersionList implements Iterator {
 
-	private $_versions = array();
+	private $versions = array();
 
 	public function addScript($type, $version, $path) {
-		if (!isset($this->_versions[$version])) {
-			$this->_versions[$version] = array();
+		if (!isset($this->versions[$version])) {
+			$this->versions[$version] = array();
 		}
 
-		$this->_versions[$version][$type] = $path;
+		$this->versions[$version][$type] = $path;
 	}
 
 	/* ------------------------------------------------------------------------
@@ -39,24 +39,24 @@ class VersionList implements Iterator {
 	 * ------------------------------------------------------------------------ */
 
 	public function current() {
-		return current($this->_versions);
+		return current($this->versions);
 	}
 
 	public function key() {
-		return key($this->_versions);
+		return key($this->versions);
 	}
 
 	public function next() {
-		next($this->_versions);
+		next($this->versions);
 	}
 
 	public function rewind() {
-		reset($this->_versions);
+		reset($this->versions);
 	}
 
 	public function valid() {
 		// The versions array should never contain the value false so this is safe.
-		return current($this->_versions) !== false;
+		return current($this->versions) !== false;
 	}
 
 }
