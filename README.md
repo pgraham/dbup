@@ -53,6 +53,8 @@ variable using the following syntax:
     INSERT INTO my_table_ref (my_table_id, refd)
         VALUES (:my_insert_id, 'refVal');
 
+In order for this to work with PostgreSQL the id field for the table needs to be
+backed by a sequence named `<table-name>_id_seq`.
 
 ### **WIP** Normalization of SERIAL fields
 

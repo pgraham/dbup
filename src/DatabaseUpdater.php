@@ -96,7 +96,7 @@ class DatabaseUpdater implements LoggerAwareInterface
 				}
 
 				if (isset($scripts['alter'])) {
-					$this->logger->debug('Apply SQL alter');
+					$this->logger->debug('Applying SQL alter');
 					try {
 						$this->alterExecutor->executeAlter(
 							$db,

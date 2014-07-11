@@ -28,6 +28,7 @@ class InsertStatement extends BaseSqlStatement implements SqlStatement
 
 	private $varName;
 	private $sql;
+	private $tableName;
 
 	public function __construct($stmt) {
 		$sqlStart = strpos($stmt, 'INSERT');
@@ -38,6 +39,14 @@ class InsertStatement extends BaseSqlStatement implements SqlStatement
 		}
 		$this->sql = substr($stmt, $sqlStart);
 
+		if (preg_match('/INSERT\s+INTO\s+(\S+)/i', $this->sql, $matches)) {
+			$this->tableName = $matches[1];
+		} else {
+			throw new InvalidArgumentException(
+				"Unable to determine INSERT statement table name: $stmt"
+			);
+		}
+
 		$assignOpPos = strpos($stmt, ':=');
 		$this->varName = trim(substr($stmt, 0, $assignOpPos));
 
@@ -46,7 +55,16 @@ class InsertStatement extends BaseSqlStatement implements SqlStatement
 
 	public function execute(DatabaseConnection $db, SqlScriptState $state) {
 		$result = parent::execute($db, $state);
-		$state->assignVariable($this->varName, $result->getInsertId());
+
+		$driver = $db->getInfo()->getDriver();
+		if ($driver === 'pgsql') {
+			$sequenceName = "{$this->tableName}_id_seq";
+			$insertId = $result->getInsertId($sequenceName);
+			echo "\n***\n\nSEQUENCE NAME: $sequenceName, INSERT ID: $insertId\n\n***\n\n";
+		} else {
+			$insertId = $result->getInsertId();
+		}
+		$state->assignVariable($this->varName, $insertId);
 		return $result;
 	}
 
