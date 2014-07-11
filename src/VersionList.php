@@ -29,6 +29,7 @@ class VersionList implements Iterator
 	public function addScript($type, $version, $path) {
 		if (!isset($this->versions[$version])) {
 			$this->versions[$version] = array();
+			ksort($this->versions);
 		}
 
 		$this->versions[$version][$type] = $path;
