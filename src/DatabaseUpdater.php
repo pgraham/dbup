@@ -65,9 +65,9 @@ class DatabaseUpdater implements LoggerAwareInterface
 
 		$this->logger->info("Updating database with alters in $alterDir");
 
-		$db->beginTransaction();
-
 		$curVersion = $this->getCurrentVersion($db);
+
+		$db->beginTransaction();
 
 		// If this is an uninitialized database apply the base schema if it exists.
 		if ($curVersion === null) {
