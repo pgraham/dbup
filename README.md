@@ -71,3 +71,11 @@ Current support includes:
  -  MySQL `integer [NOT NULL] AUTO_INCREMENT` field can be executed against a
     PostgreSQL connection. Field can be specified as not null.
  -  That's it.
+
+### **WIP** Normalization of ALTER TABLE
+
+Some support for normalizing the various `ALTER TABLE` commands
+
+ -  MySQL `ALTER TABLE <table> MODIFY [COLUMN] <column> <new-type>` and PgSQL
+    `ALTER TABLE <table> ALTER COLUMN <column> [SET DATA] TYPE <new-type>`
+    statements are normalized.

@@ -61,4 +61,36 @@ class SqlStatementFactoryTest extends TestCase
 		$this->assertEquals($stmtSrc, $stmt->getSource());
 	}
 
+	public function testAlterTable() {
+		$factory = new SqlStatementFactory();
+
+		$stmtSrc = 'ALTER TABLE t MODIFY COLUMN c varchar(128);';
+		$stmt = $factory->createFor($stmtSrc);
+
+		$this->assertInstanceOf('zpt\dbup\script\AlterTableStatement', $stmt);
+	}
+
+	public function testChangeColumnType() {
+		$factory = new SqlStatementFactory();
+
+		$stmts = [
+			'ALTER TABLE t MODIFY c varchar(128);',
+			'ALTER TABLE t MODIFY COLUMN c varchar(128);',
+			'ALTER TABLE t ALTER COLUMN c TYPE varchar(128);',
+			'ALTER TABLE t ALTER COLUMN c SET DATA TYPE varchar(128);'
+		];
+
+		foreach ($stmts as $stmtSrc) {
+			$stmt = $factory->createFor($stmtSrc);
+			$this->assertInstanceOf(
+				'zpt\dbup\script\ChangeColumnTypeStatement',
+				$stmt
+			);
+
+			$this->assertEquals('t', $stmt->getTable());
+			$this->assertEquals('c', $stmt->getColumn());
+			$this->assertEquals('varchar(128)', $stmt->getType());
+		}
+	}
+
 }

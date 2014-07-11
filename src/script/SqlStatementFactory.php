@@ -16,7 +16,11 @@ namespace zpt\dbup\script;
  */
 class SqlStatementFactory {
 
-	private static $CREATE_TABLE_RE;
+	private $alterTableStatmentFactory;
+
+	public function __construct() {
+		$this->alterTableStatementFactory = new AlterTableStatementFactory();
+	}
 
 	/**
 	 * Create an SqlScriptStatement.
@@ -25,11 +29,17 @@ class SqlStatementFactory {
 	 */
 	public function createFor($stmt) {
 		$stmt = String($stmt);
-		if (preg_match('/^\S+\s*:=\s*INSERT\s+/', $stmt)) {
-			return new InsertStatement($stmt);
-		} else if ($stmt->startsWith('CREATE TABLE')) {
+
+		if ($stmt->startsWith('CREATE TABLE')) {
 			return new CreateTableStatement($stmt);
-		} else {
+
+		} else if ($stmt->startsWith('ALTER TABLE')) {
+			return $this->alterTableStatementFactory->createFor($stmt);
+
+		} else if (preg_match('/^\S+\s*:=\s*INSERT\s+/', $stmt)) {
+			return new InsertStatement($stmt);
+
+		}  else {
 			return new SimpleSqlStatement($stmt);
 		}
 	}
