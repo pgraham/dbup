@@ -1,16 +1,15 @@
 <?php
-/**
- * =============================================================================
- * Copyright (c) 2012, Philip Graham
+/*
+ * Copyright (c) 2014, Philip Graham
  * All rights reserved.
  *
- * This file is part of DbUp and is licensed by the Copyright holder under the
- * 3-clause BSD License.	The full text of the license can be found in the
- * LICENSE.txt file included in the root directory of this distribution or at
- * the link below.
- * =============================================================================
+ * This file is part of DbUp. For the full copyright and license information
+ * please view the LICENSE file that was distributed with this source code.
  *
- * @license http://www.opensource.org/licenses/bsd-license.php
+ * If you did not receive this file as part of a distrubution that includes
+ * a LICENSE file attributing then no further rights will be granted until the
+ * author is contacted with information regarding the provenance of this file,
+ * i.e. Who the FUCK is plagarising my work!
  */
 namespace zpt\dbup;
 
@@ -22,7 +21,8 @@ use Iterator;
  *
  * @author Philip Graham <philip@zeptech.ca>
  */
-class VersionList implements Iterator {
+class VersionList implements Iterator
+{
 
 	private $versions = [];
 
@@ -34,9 +34,11 @@ class VersionList implements Iterator {
 		$this->versions[$version][$type] = $path;
 	}
 
-	/* ------------------------------------------------------------------------
+	/*
+	 * ------------------------------------------------------------------------
 	 * Iterator implementation
-	 * ------------------------------------------------------------------------ */
+	 * ------------------------------------------------------------------------
+	 */
 
 	public function current() {
 		return current($this->versions);
