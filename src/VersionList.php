@@ -7,9 +7,9 @@
  * please view the LICENSE file that was distributed with this source code.
  *
  * If you did not receive this file as part of a distrubution that includes
- * a LICENSE file attributing then no further rights will be granted until the
- * author is contacted with information regarding the provenance of this file,
- * i.e. Who the FUCK is plagarising my work!
+ * a LICENSE file then no further rights will be granted until the author is
+ * contacted with information regarding the provenance of this file, i.e.
+ * Who the FUCK is plagarising my work!
  */
 namespace zpt\dbup;
 
