@@ -24,7 +24,7 @@ use Iterator;
  */
 class VersionList implements Iterator {
 
-	private $versions = array();
+	private $versions = [];
 
 	public function addScript($type, $version, $path) {
 		if (!isset($this->versions[$version])) {
